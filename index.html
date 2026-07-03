@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sucesiones, sumas parciales y series — Laboratorio Digital de Matemática</title>
+
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+<!-- Tipografías laboratoriobest-IA -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   SISTEMA DE DISEÑO laboratoriobest-IA
+   ============================================================ */
+:root{
+  --blue:#2B5A93;
+  --amber:#C77A40;
+  --green:#45785A;
+  --rust:#BC5235;
+  --violet:#6E4EAA;
+  --paper:#FBF8F1;
+  --ink:#2B2A26;
+  --ink-soft:#5C5A52;
+  --line:#E4DECF;
+  --card:#FFFFFF;
+  --ok-bg:#EAF2ED;
+  --warn-bg:#FBF0E4;
+  --err-bg:#F9EAE5;
+  --radius:14px;
+  --shadow:0 2px 10px rgba(43,42,38,.07);
+  --nav-h:58px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Hanken Grotesk',system-ui,sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  background-image:
+    linear-gradient(rgba(43,90,147,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43,90,147,.055) 1px, transparent 1px);
+  background-size:24px 24px;
+  line-height:1.6;
+  font-size:16px;
+}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.2}
+h2{font-size:1.75rem;font-weight:700}
+h3{font-size:1.15rem;font-weight:600}
+p{margin-bottom:.8em}
+.katex{font-size:1.05em}
+
+/* ---------- Navegación ---------- */
+nav{
+  position:sticky;top:0;z-index:50;height:var(--nav-h);
+  background:rgba(251,248,241,.94);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:4px;
+  padding:0 10px;overflow-x:auto;white-space:nowrap;
+}
+nav .brand{font-family:'Fraunces',serif;font-weight:700;color:var(--blue);font-size:.95rem;margin-right:8px;flex:0 0 auto}
+nav button{
+  flex:0 0 auto;border:none;background:transparent;cursor:pointer;
+  font-family:inherit;font-size:.8rem;font-weight:600;color:var(--ink-soft);
+  padding:6px 9px;border-radius:8px;
+}
+nav button:hover{background:#F1ECDF;color:var(--ink)}
+nav button.done::before{content:"✓ ";color:var(--green)}
+#barraProgreso{position:fixed;top:var(--nav-h);left:0;height:3px;background:var(--amber);width:0;z-index:49;transition:width .2s}
+
+/* ---------- Secciones ---------- */
+section{max-width:900px;margin:0 auto;padding:56px 20px 30px}
+.eyebrow{
+  display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--card);background:var(--blue);
+  padding:3px 12px;border-radius:99px;margin-bottom:12px;
+}
+.eyebrow.a{background:var(--amber)} .eyebrow.g{background:var(--green)}
+.eyebrow.r{background:var(--rust)} .eyebrow.v{background:var(--violet)}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;margin:16px 0;
+}
+.nota{
+  border-left:4px solid var(--blue);background:#F3F6FA;
+  padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:.95rem;
+}
+.nota.amber{border-color:var(--amber);background:var(--warn-bg)}
+.nota.green{border-color:var(--green);background:var(--ok-bg)}
+.nota.rust{border-color:var(--rust);background:var(--err-bg)}
+.frase{
+  font-family:'Fraunces',serif;font-size:1.12rem;font-style:italic;
+  color:var(--blue);border-left:4px solid var(--amber);padding:8px 16px;margin:16px 0;
+}
+
+/* ---------- Botones ---------- */
+.btn{
+  display:inline-block;border:none;cursor:pointer;font-family:inherit;
+  font-weight:700;font-size:.95rem;color:#fff;background:var(--blue);
+  padding:11px 22px;border-radius:10px;transition:transform .12s, box-shadow .12s;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(43,90,147,.3)}
+.btn.sec{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+.btn.small{padding:7px 14px;font-size:.85rem}
+.btn.ghost{background:transparent;color:var(--ink-soft);border:1.5px dashed var(--line)}
+.btn.amber{background:var(--amber)} .btn.green{background:var(--green)} .btn.rust{background:var(--rust)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ---------- Opciones de ejercicio ---------- */
+.opciones{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.opciones button{
+  text-align:left;font-family:inherit;font-size:.95rem;cursor:pointer;
+  background:#FCFAF4;border:1.5px solid var(--line);border-radius:10px;
+  padding:11px 14px;transition:border-color .15s, background .15s;color:var(--ink);
+}
+.opciones button:hover:not(:disabled){border-color:var(--blue);background:#F3F6FA}
+.opciones button.correcta{border-color:var(--green);background:var(--ok-bg);font-weight:600}
+.opciones button.incorrecta{border-color:var(--rust);background:var(--err-bg)}
+.opciones button:disabled{cursor:default}
+
+.veredicto{border-radius:10px;padding:12px 15px;margin:10px 0;font-size:.93rem;display:none}
+.veredicto.ok{display:block;background:var(--ok-bg);border:1px solid var(--green)}
+.veredicto.warn{display:block;background:var(--warn-bg);border:1px solid var(--amber)}
+
+/* ---------- Acordeones de teoría ---------- */
+details.bloque{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin:12px 0;overflow:hidden;
+}
+details.bloque summary{
+  cursor:pointer;list-style:none;padding:16px 20px;font-family:'Fraunces',serif;
+  font-weight:700;font-size:1.05rem;color:var(--blue);display:flex;align-items:center;gap:10px;
+}
+details.bloque summary::-webkit-details-marker{display:none}
+details.bloque summary::after{content:"+";margin-left:auto;font-size:1.4rem;color:var(--amber);transition:transform .2s}
+details.bloque[open] summary::after{transform:rotate(45deg)}
+details.bloque .contenido{padding:0 20px 20px;border-top:1px dashed var(--line)}
+details.bloque .contenido>*:first-child{margin-top:14px}
+.num{
+  flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;
+  font-family:'Hanken Grotesk';font-size:.85rem;font-weight:800;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* ---------- Tablas ---------- */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem;background:#fff}
+th{background:var(--blue);color:#fff;font-weight:700;padding:9px 10px;text-align:left}
+td{border:1px solid var(--line);padding:8px 10px}
+tr:nth-child(even) td{background:#FAF7F0}
+.tabla-scroll{overflow-x:auto}
+
+/* ---------- Laboratorio ---------- */
+#canvasLab{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px;display:block}
+.lab-controles{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.chip{
+  border:1.5px solid var(--line);background:#FCFAF4;border-radius:99px;
+  padding:7px 16px;font-family:inherit;font-weight:600;font-size:.87rem;cursor:pointer;color:var(--ink-soft);
+}
+.chip.activo{background:var(--blue);border-color:var(--blue);color:#fff}
+input[type=range]{accent-color:var(--amber);width:200px;max-width:60vw}
+.leyenda{display:flex;gap:18px;font-size:.85rem;margin:8px 0;flex-wrap:wrap}
+.leyenda .pt{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+
+/* ---------- Práctica: pestañas de nivel ---------- */
+.niveles-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.niveles-tabs button{
+  font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;
+  border:2px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;color:var(--ink-soft);
+}
+.niveles-tabs button.activo{border-color:var(--amber);background:var(--warn-bg);color:var(--ink)}
+.niveles-tabs button .estado{font-size:.72rem;display:block;font-weight:600}
+.badge{
+  display:inline-block;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:99px;
+  background:var(--ok-bg);color:var(--green);border:1px solid var(--green);margin-left:8px;
+}
+.badge.reco{background:var(--warn-bg);color:var(--amber);border-color:var(--amber)}
+
+.pistas{margin:10px 0}
+.pista-item{
+  display:none;background:#F6F3EA;border:1px dashed var(--amber);
+  border-radius:10px;padding:10px 14px;margin:6px 0;font-size:.9rem;
+}
+.pista-item.visible{display:block}
+.solucion{display:none;margin-top:12px;border-top:2px solid var(--green);padding-top:12px}
+.solucion.visible{display:block}
+.remedial{display:none;background:#F5F1FA;border:1.5px solid var(--violet);border-radius:12px;padding:16px;margin:12px 0}
+.remedial.visible{display:block}
+.remedial h4{font-family:'Fraunces',serif;color:var(--violet);margin-bottom:8px}
+.metacog-mini{display:none;margin-top:10px;font-size:.88rem}
+.metacog-mini.visible{display:block}
+.metacog-mini .chip{margin:4px 4px 0 0}
+.chip.elegido{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ---------- Progreso / resultados ---------- */
+.progreso-wrap{background:var(--line);border-radius:99px;height:12px;overflow:hidden;margin:10px 0}
+.progreso-fill{height:100%;background:var(--green);width:0;transition:width .4s}
+.resultado-card{border:2px solid var(--blue);border-radius:var(--radius);background:#F3F6FA;padding:20px;margin:16px 0}
+textarea{
+  width:100%;min-height:74px;border:1.5px solid var(--line);border-radius:10px;
+  font-family:inherit;font-size:.95rem;padding:10px 12px;background:#fff;resize:vertical;
+}
+input[type=text]{
+  width:100%;max-width:420px;border:1.5px solid var(--line);border-radius:10px;
+  font-family:inherit;font-size:.95rem;padding:10px 12px;background:#fff;
+}
+#reporteTexto{
+  white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:10px;
+  padding:18px;font-size:.88rem;font-family:'Hanken Grotesk',monospace;max-height:480px;overflow:auto;
+}
+
+/* ---------- Portada ---------- */
+#portada{min-height:calc(100vh - var(--nav-h));display:flex;flex-direction:column;justify-content:center;text-align:center;padding-top:20px}
+#portada h1{font-size:clamp(2rem,6vw,3.4rem);font-weight:900;color:var(--blue)}
+#portada .sub{font-family:'Fraunces',serif;font-style:italic;font-size:1.15rem;color:var(--amber);margin:10px 0 4px}
+#portada .inst{font-size:.9rem;color:var(--ink-soft);margin:14px 0}
+.tres-objetos{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:26px 0}
+.tres-objetos .obj{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px 20px;min-width:180px;flex:0 1 220px;
+}
+.tres-objetos .obj .tit{font-family:'Fraunces',serif;font-weight:700;font-size:.95rem;margin-bottom:6px}
+.tres-objetos .obj:nth-child(1) .tit{color:var(--blue)}
+.tres-objetos .obj:nth-child(2) .tit{color:var(--amber)}
+.tres-objetos .obj:nth-child(3) .tit{color:var(--green)}
+.tres-objetos .obj .mini{font-size:.8rem;color:var(--ink-soft)}
+
+/* ---------- Modal reinicio ---------- */
+#modalReset{
+  display:none;position:fixed;inset:0;background:rgba(43,42,38,.45);z-index:100;
+  align-items:center;justify-content:center;padding:20px;
+}
+#modalReset.visible{display:flex}
+#modalReset .caja{background:#fff;border-radius:var(--radius);padding:26px;max-width:420px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+
+/* ---------- Selector de navegación en móvil ---------- */
+#navSel{display:none;font-family:inherit;font-size:.85rem;font-weight:600;border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;background:#fff;color:var(--ink);max-width:200px}
+@media (max-width:700px){
+  nav button{display:none}
+  #navSel{display:block;flex:1}
+}
+/* ---------- Estados de chips (predicción / clasificación) ---------- */
+.chip.pred-elegida{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip.pred-ok{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ---------- Impresión ---------- */
+@media print{
+  nav,#barraProgreso,.no-print,#modalReset{display:none !important}
+  body{background:#fff}
+  section{padding:10px 0}
+  #reporte{display:block}
+}
+@media (max-width:640px){
+  section{padding:44px 14px 24px}
+  h2{font-size:1.45rem}
+  .card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= NAVEGACIÓN ================= -->
+<nav>
+  <span class="brand"><span style="color:var(--blue)">laboratorio</span><span style="color:var(--amber)">best</span><span style="color:var(--ink-soft)">-</span><span style="color:var(--green)">I</span><span style="color:var(--violet)">A</span></span>
+  <button onclick="ir('portada')">Inicio</button>
+  <button id="nav-diagnostico" onclick="ir('diagnostico')">Diagnóstico</button>
+  <button id="nav-activacion" onclick="ir('activacion')">Activación</button>
+  <button id="nav-teoria" onclick="ir('teoria')">Teoría</button>
+  <button id="nav-laboratorio" onclick="ir('laboratorio')">Laboratorio</button>
+  <button id="nav-contraejemplos" onclick="ir('contraejemplos')">Contraej.</button>
+  <button id="nav-geometrica" onclick="ir('geometrica')">Geométrica</button>
+  <button id="nav-practica" onclick="ir('practica')">Práctica</button>
+  <button id="nav-errores" onclick="ir('errores')">Errores</button>
+  <button id="nav-evaluacion" onclick="ir('evaluacion')">Evaluación</button>
+  <button id="nav-cierre" onclick="ir('cierre')">Cierre</button>
+  <button id="nav-reporte" onclick="ir('reporte')">Reporte</button>
+  <select id="navSel" onchange="if(this.value){ir(this.value);this.selectedIndex=0;}">
+    <option value="">Ir a sección…</option>
+    <option value="portada">Inicio</option>
+    <option value="diagnostico">Diagnóstico</option>
+    <option value="activacion">Activación</option>
+    <option value="teoria">Teoría</option>
+    <option value="laboratorio">Laboratorio</option>
+    <option value="contraejemplos">Contraejemplos</option>
+    <option value="geometrica">Serie geométrica</option>
+    <option value="practica">Práctica</option>
+    <option value="errores">Errores frecuentes</option>
+    <option value="evaluacion">Evaluación</option>
+    <option value="cierre">Cierre</option>
+    <option value="reporte">Reporte</option>
+  </select>
+</nav>
+<div id="barraProgreso"></div>
+
+<!-- ================= 1. PORTADA ================= -->
+<section id="portada">
+  <span class="eyebrow" style="margin:0 auto 12px">Laboratorio Digital de Matemática</span>
+  <h1>Sucesiones, sumas parciales<br>y series</h1>
+  <p class="sub">Una experiencia interactiva y dinámica</p>
+  <p class="inst">Escuela Técnica Philips · 5.º año<br>Prof. Ariel L. Cardozo Delgado</p>
+
+  <div class="tres-objetos">
+    <div class="obj"><div class="tit">Sucesión \(a_n\)</div><div>\(1,\ \tfrac12,\ \tfrac13,\ \tfrac14,\dots\)</div><div class="mini">mira los términos</div></div>
+    <div class="obj"><div class="tit">Suma parcial \(S_n\)</div><div>\(S_3=a_1+a_2+a_3\)</div><div class="mini">mira lo acumulado (finito)</div></div>
+    <div class="obj"><div class="tit">Serie \(\sum_{n=1}^{\infty}a_n\)</div><div>\(a_1+a_2+a_3+\cdots\)</div><div class="mini">¿tiene sentido sumar infinito?</div></div>
+  </div>
+
+  <p style="max-width:640px;margin:0 auto 22px;color:var(--ink-soft)">
+    Tres objetos que parecen lo mismo pero no lo son. En esta experiencia vas a distinguirlos,
+    experimentar con ellos y decidir cuándo una suma infinita da un número… y cuándo no.
+    La página se adapta a tu recorrido: primero un diagnóstico breve, después actividades según tu nivel.
+  </p>
+  <div>
+    <button class="btn" onclick="ir('diagnostico')">Empezar por el diagnóstico</button>
+    <button class="btn sec no-print" id="btnContinuar" style="display:none;margin-left:8px" onclick="continuarDonde()">Continuar donde dejaste</button>
+    <button class="btn ghost no-print" onclick="abrirReset()" style="margin-left:8px">Reiniciar progreso</button>
+  </div>
+</section>
+
+<!-- ================= 2. DIAGNÓSTICO ================= -->
+<section id="diagnostico">
+  <span class="eyebrow">Paso 1 · Diagnóstico inicial</span>
+  <h2>¿De dónde partís?</h2>
+  <div class="nota"><strong>Saberes previos que vas a usar:</strong> interpretar una fórmula \(a_n\) y reemplazar valores de \(n\); sumar fracciones simples; reconocer límites básicos (como \(\tfrac1n\to0\)); leer la notación \(\sum\); y distinguir un proceso finito de uno infinito. Si alguno te suena flojo, el diagnóstico te lo va a marcar y la teoría lo repasa.</div>
+  <p>Seis preguntas breves para detectar tus ideas previas. No es una nota: es una brújula.
+  Cada respuesta te devuelve una explicación, y al final la página te recomienda desde qué nivel de práctica arrancar.</p>
+  <div id="diagPreguntas"></div>
+  <div id="diagResultado"></div>
+</section>
+
+<!-- ================= 3. ACTIVACIÓN CONCEPTUAL ================= -->
+<section id="activacion">
+  <span class="eyebrow a">Paso 2 · Activación conceptual</span>
+  <h2>La caminata que nunca llega… ¿o sí?</h2>
+  <div class="card">
+    <p>Estás a <strong>1 metro</strong> de una pared. Das un paso que cubre <strong>la mitad</strong> de lo que falta:
+    avanzás \( \tfrac12 \). Después otra mitad de lo que queda: \( \tfrac14 \). Después \( \tfrac18 \), \( \tfrac1{16} \)…
+    y así <em>para siempre</em>.</p>
+    <p style="text-align:center;font-size:1.1rem">\[ \frac12+\frac14+\frac18+\frac1{16}+\cdots \]</p>
+    <p>Cada paso es un número de una <strong>lista</strong>. Lo que llevás caminado es una <strong>acumulación</strong>.
+    Y la pregunta del millón es sobre el <strong>total infinito</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Antes de seguir, pensá (y anotá mentalmente):</h3>
+    <div class="opciones" style="margin-top:10px">
+      <button onclick="revelar(this,'Los pasos: cada uno mide la mitad del anterior. Esa lista de pasos es la <strong>sucesión</strong> \\(a_n=\\tfrac1{2^n}\\).')">🔎 ¿Qué observás en cada paso?</button>
+      <button onclick="revelar(this,'Cambian dos cosas distintas: el <strong>tamaño de cada paso</strong> (cada vez más chico) y el <strong>total recorrido</strong> (cada vez más grande). Son dos objetos diferentes que conviene no mezclar.')">🔁 ¿Qué cambia a medida que caminás?</button>
+      <button onclick="revelar(this,'La regla permanece: siempre la mitad de lo que falta. Y también permanece algo clave: <strong>nunca pasás la pared</strong>. El recorrido acumulado siempre queda por debajo de 1.')">📌 ¿Qué permanece constante?</button>
+      <button onclick="revelar(this,'Podés anticipar que lo acumulado se <strong>acerca a 1 metro</strong> sin superarlo jamás. ¿Eso significa que la suma infinita «vale» 1? Esa es exactamente la pregunta que responde el concepto de serie.')">🔮 ¿Qué podrías anticipar del total?</button>
+      <button onclick="revelar(this,'El error fácil: como los pasos se hacen chiquitos (\\(a_n\\to 0\\)), concluir que <em>cualquier</em> suma de pasos chiquitos da un total finito. Vas a ver que eso es <strong>falso</strong>: hay caminatas con pasos que tienden a cero… y el total explota igual.')">⚠️ ¿Qué error sería fácil cometer acá?</button>
+    </div>
+    <div id="revelado" class="nota amber" style="display:none"></div>
+  </div>
+  <p class="no-print" style="text-align:center"><button class="btn amber" onclick="ir('teoria')">Ahora sí: formalicemos</button></p>
+</section>
+
+<!-- ================= 4. TEORÍA GUIADA ================= -->
+<section id="teoria">
+  <span class="eyebrow g">Paso 3 · Teoría guiada</span>
+  <h2>Tres objetos, tres miradas</h2>
+  <p class="frase">La sucesión \(a_n\) muestra los términos. La suma parcial \(S_n\) muestra cuánto llevamos acumulado.
+  La serie converge cuando esos acumulados se estabilizan en un número finito.</p>
+
+  <details class="bloque" open>
+    <summary><span class="num">1</span> Idea intuitiva: una fila, una caja registradora y un destino</summary>
+    <div class="contenido">
+      <p>Imaginá una fila infinita de personas; cada una lleva un cartel con un número. Esa fila es la <strong>sucesión</strong>.</p>
+      <p>Ahora imaginá una caja registradora que va sumando los carteles a medida que pasan las primeras \(n\) personas.
+      Lo que marca la caja en cada momento es la <strong>suma parcial</strong> \(S_n\): el saldo acumulado hasta la persona \(n\).</p>
+      <p>La <strong>serie</strong> es la pregunta final: si la fila no termina nunca, ¿el saldo de la caja se estabiliza en un número, o crece sin control, o queda oscilando?</p>
+      <div class="nota">Una sucesión mira <strong>términos</strong>. Una suma parcial mira <strong>acumulados finitos</strong>. Una serie estudia si tiene sentido <strong>sumar infinitos términos</strong>.</div>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">2</span> Sucesión: la lista ordenada</summary>
+    <div class="contenido">
+      <p>Una <strong>sucesión</strong> es una lista ordenada e infinita de números. Se escribe \((a_n)_{n\ge1}\) o simplemente \(a_n\). Cada número de la lista es un <strong>término</strong>.</p>
+      <p>Ejemplo: si \(a_n=\dfrac1n\), entonces \(a_1=1\), \(a_2=\tfrac12\), \(a_3=\tfrac13\), \(a_4=\tfrac14\), y la sucesión es
+      \(1,\ \tfrac12,\ \tfrac13,\ \tfrac14,\dots\)</p>
+      <div class="tabla-scroll"><table>
+        <tr><th>\(n\)</th><th>\(a_n=\tfrac1n\)</th></tr>
+        <tr><td>1</td><td>\(1\)</td></tr>
+        <tr><td>2</td><td>\(\tfrac12\)</td></tr>
+        <tr><td>3</td><td>\(\tfrac13\)</td></tr>
+        <tr><td>4</td><td>\(\tfrac14\)</td></tr>
+        <tr><td>5</td><td>\(\tfrac15\)</td></tr>
+      </table></div>
+      <p>Sobre la sucesión podemos estudiar su límite. Acá: \(\displaystyle\lim_{n\to\infty}\frac1n=0\).
+      Eso dice que <strong>los términos individuales</strong> se acercan a 0. Todavía no dice nada sobre ninguna suma.</p>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">3</span> Suma parcial: lo acumulado hasta el paso \(n\)</summary>
+    <div class="contenido">
+      <p>Dada una sucesión \(a_1,a_2,a_3,\dots\), la <strong>suma parcial</strong> \(S_n\) es la suma de los <strong>primeros \(n\) términos</strong>:</p>
+      <p style="text-align:center">\[ S_n=a_1+a_2+\cdots+a_n=\sum_{k=1}^{n}a_k \]</p>
+      <p>Entonces \(S_1=a_1\), \(S_2=a_1+a_2\), \(S_3=a_1+a_2+a_3\), etcétera.
+      Al cambiar \(n\), los valores \(S_1,S_2,S_3,\dots\) forman una <strong>nueva sucesión</strong>: la sucesión de sumas parciales.</p>
+      <div class="nota rust"><strong>Cuidado con el lenguaje:</strong> no es correcto decir «el segundo término de la serie es \(a_1+a_2\)».
+      Eso es \(S_2\), el segundo término de la <strong>sucesión de sumas parciales</strong>. Los términos de la serie siguen siendo los \(a_n\).</div>
+      <p>Aclaración útil: «la suma de los primeros \(n\) términos» y «la sumatoria de 1 hasta \(n\)» son <strong>exactamente lo mismo</strong>;
+      solo cambia la notación. \(S_n=\sum_{k=1}^{n}a_k\) siempre es un número real concreto que se puede calcular.</p>
+      <div class="nota green"><strong>Cápsula: cómo leer la notación \(\sum\).</strong> El símbolo ordena «sumá»: abajo dice desde dónde arranca el índice y arriba hasta dónde llega. Por ejemplo,
+      \(\sum_{k=1}^{4}a_k=a_1+a_2+a_3+a_4\), y con números: \(\sum_{k=1}^{4}\tfrac1{2^k}=\tfrac12+\tfrac14+\tfrac18+\tfrac1{16}=\tfrac{15}{16}\).
+      Un detalle de escritura que evita enredos: la letra \(k\) es el <strong>índice de suma</strong>, una variable «muda» (podría llamarse \(i\) o \(j\) y nada cambiaría), mientras que \(n\) marca <strong>hasta dónde</strong> se acumula. Por eso se escribe \(S_n=\sum_{k=1}^{n}a_k\) y no \(\sum_{n=1}^{n}a_n\), que mezcla los dos roles en una sola letra.</div>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">4</span> Serie: la suma infinita (definición formal)</summary>
+    <div class="contenido">
+      <p>Dada la sucesión \((a_n)_{n\ge1}\), la <strong>serie asociada</strong> es</p>
+      <p style="text-align:center">\[ \sum_{n=1}^{\infty}a_n=a_1+a_2+a_3+a_4+\cdots \]</p>
+      <p>Por ejemplo, si \(a_n=\dfrac1{2^n}\), la serie es \(\displaystyle\sum_{n=1}^{\infty}\frac1{2^n}=\frac12+\frac14+\frac18+\frac1{16}+\cdots\)</p>
+      <p>La diferencia clave con la suma parcial: la sumatoria hasta \(n\) es un <strong>proceso finito</strong> (siempre se puede terminar de calcular),
+      mientras que la serie es un <strong>proceso infinito</strong>: no se calcula «de golpe» sumando todo, sino analizando el <em>comportamiento</em> de las sumas parciales.</p>
+      <div class="nota">Precisión conceptual: una serie es una suma infinita formal cuyo comportamiento se define mediante la sucesión de sumas parciales.
+      Dicho de forma didáctica: <strong>estudiar una serie equivale a estudiar la sucesión de sus sumas parciales</strong>.</div>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">5</span> Convergencia: cuándo la suma infinita «vale» un número</summary>
+    <div class="contenido">
+      <p>La serie \(\displaystyle\sum_{n=1}^{\infty}a_n\) <strong>converge</strong> si la sucesión de sumas parciales tiene límite finito:</p>
+      <p style="text-align:center">\[ \sum_{n=1}^{\infty}a_n \text{ converge } \Longleftrightarrow \lim_{n\to\infty}S_n=L,\quad L\in\mathbb{R} \]</p>
+      <p>En ese caso escribimos \(\displaystyle\sum_{n=1}^{\infty}a_n=L\).
+      Si \(\lim S_n\) es \(+\infty\), \(-\infty\), u oscila sin acercarse a un único número, la serie <strong>diverge</strong>.</p>
+      <div class="tabla-scroll"><table>
+        <tr><th>Límite</th><th>Qué analiza</th><th>Para qué sirve</th></tr>
+        <tr><td>\(\lim\limits_{n\to\infty}a_n\)</td><td>Los términos individuales</td><td>Estudia la sucesión</td></tr>
+        <tr><td>\(\lim\limits_{n\to\infty}S_n\)</td><td>Las sumas acumuladas</td><td>Decide si la serie converge</td></tr>
+      </table></div>
+      <div class="nota amber"><strong>Condición necesaria:</strong> si la serie converge, entonces obligatoriamente \(\lim a_n=0\).
+      Pero el recíproco es <strong>falso</strong>: \(a_n\to 0\) <em>no alcanza</em> para que la serie converja (el laboratorio te lo va a mostrar con la serie armónica).
+      Y una letra chica que importa: «no tender a 0» cubre <strong>dos casos</strong> — que el límite exista y sea distinto de 0 (como en \(a_n=1\)), o que el límite directamente no exista (como en \(a_n=(-1)^{n+1}\), que salta entre 1 y −1). En cualquiera de los dos, la serie diverge.</div>
+      <div class="tabla-scroll"><table>
+        <tr><th>Caso</th><th>Conclusión</th></tr>
+        <tr><td>\(a_n\) <strong>no tiende a 0</strong> (su límite es distinto de 0 <em>o directamente no existe</em>)</td><td>La serie diverge <strong>seguro</strong></td></tr>
+        <tr><td>\(\lim a_n=0\)</td><td>La serie <strong>puede</strong> converger o divergir: hay que seguir analizando</td></tr>
+        <tr><td>\(\lim S_n=L\in\mathbb{R}\)</td><td>La serie converge (y su suma es \(L\))</td></tr>
+        <tr><td>\(\lim S_n=\pm\infty\) o no existe</td><td>La serie diverge</td></tr>
+      </table></div>
+      <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700;color:var(--rust);font-family:'Fraunces',serif">➕ ¿Por qué diverge la armónica? Una demostración de verdad (agrupamiento)</summary>
+        <p style="margin-top:12px">Que en el gráfico las sumas «suban sin techo» es <em>evidencia</em>, no demostración. El argumento clásico agrupa los términos en bloques cada vez más largos:</p>
+        <p style="text-align:center">\[ 1+\frac12+\underbrace{\left(\frac13+\frac14\right)}_{>\ \frac14+\frac14=\frac12}+\underbrace{\left(\frac15+\frac16+\frac17+\frac18\right)}_{>\ 4\cdot\frac18=\frac12}+\cdots \]</p>
+        <p>Cada bloque nuevo tiene el doble de términos que el anterior, y todos superan al último del bloque; por eso cada bloque aporta <strong>más de \(\tfrac12\)</strong>. Las sumas parciales acumulan entonces medio punto tras medio punto, sin fin: \(S_n\) crece sin cota y la serie <strong>diverge</strong>… aunque \(\tfrac1n\to0\). Esto no es «vimos muchos casos»: es un argumento que vale para <strong>todos</strong> los términos, infinitos incluidos.</p>
+      </details>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">6</span> Procedimiento en 4 pasos</summary>
+    <div class="contenido">
+      <p>Para estudiar \(\displaystyle\sum_{n=1}^{\infty}a_n\):</p>
+      <p><strong>Paso 1 — Identificar la sucesión</strong> \(a_n\). (Ejemplo: \(a_n=\tfrac1{2^n}\).)</p>
+      <p><strong>Paso 2 — Construir las sumas parciales</strong> \(S_n=a_1+a_2+\cdots+a_n\), buscando si hay una fórmula cerrada.</p>
+      <p><strong>Paso 3 — Calcular</strong> \(\displaystyle\lim_{n\to\infty}S_n\).</p>
+      <p><strong>Paso 4 — Concluir:</strong> si el límite es un número finito \(L\), la serie converge y vale \(L\); si no, diverge.</p>
+      <div class="nota rust"><strong>Advertencia:</strong> el error más frecuente es hacer el Paso 3 con \(a_n\) en lugar de \(S_n\), o creer que verificar \(a_n\to0\) ya cierra el problema. La decisión final siempre pasa por \(S_n\).</div>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">7</span> Ejemplo guiado paso a paso: \(\sum_{n=1}^{\infty}\tfrac1{2^n}\)</summary>
+    <div class="contenido">
+      <p><strong>Paso 1.</strong> La sucesión es \(a_n=\tfrac1{2^n}\): sus términos son \(\tfrac12,\ \tfrac14,\ \tfrac18,\ \tfrac1{16},\dots\)</p>
+      <p><strong>Paso 2.</strong> Armamos las sumas parciales:</p>
+      <div class="tabla-scroll"><table>
+        <tr><th>\(n\)</th><th>\(a_n=\tfrac1{2^n}\)</th><th>\(S_n\)</th></tr>
+        <tr><td>1</td><td>\(\tfrac12\)</td><td>\(\tfrac12\)</td></tr>
+        <tr><td>2</td><td>\(\tfrac14\)</td><td>\(\tfrac12+\tfrac14=\tfrac34\)</td></tr>
+        <tr><td>3</td><td>\(\tfrac18\)</td><td>\(\tfrac78\)</td></tr>
+        <tr><td>4</td><td>\(\tfrac1{16}\)</td><td>\(\tfrac{15}{16}\)</td></tr>
+        <tr><td>5</td><td>\(\tfrac1{32}\)</td><td>\(\tfrac{31}{32}\)</td></tr>
+      </table></div>
+      <p>La tabla <em>sugiere</em> un patrón: a cada \(S_n\) le falta exactamente \(\tfrac1{2^n}\) para llegar a 1, es decir \(S_n=1-\dfrac1{2^n}\). Pero verificar cuatro casos no es demostrar: deduzcamos la fórmula para <strong>todo</strong> \(n\).</p>
+      <details style="margin:10px 0"><summary style="cursor:pointer;font-weight:700;color:var(--blue);font-family:'Fraunces',serif">➕ Deducción de \(S_n=1-\tfrac1{2^n}\): el truco de multiplicar por 2</summary>
+        <p style="margin-top:12px">Escribimos la suma parcial y la multiplicamos por 2 (cada término se duplica y «corre un lugar»):</p>
+        <p style="text-align:center">\[ S_n=\frac12+\frac14+\cdots+\frac1{2^n} \qquad\Rightarrow\qquad 2S_n=1+\frac12+\frac14+\cdots+\frac1{2^{n-1}} \]</p>
+        <p>Al restar \(2S_n-S_n\), casi todos los términos aparecen en las dos sumas y se cancelan; sobreviven solo los extremos:</p>
+        <p style="text-align:center">\[ 2S_n-S_n=1-\frac1{2^n} \qquad\Rightarrow\qquad \boxed{\,S_n=1-\frac1{2^n}\,} \]</p>
+        <p>Ahora la fórmula vale para cualquier \(n\), no solo para los casos de la tabla. Verificalo: con \(n=3\) da \(1-\tfrac18=\tfrac78\). ✓</p>
+      </details>
+      <p><strong>Paso 3.</strong> \(\displaystyle\lim_{n\to\infty}S_n=\lim_{n\to\infty}\left(1-\frac1{2^n}\right)=1\), porque \(\tfrac1{2^n}\to0\) (el denominador crece sin cota).</p>
+      <p><strong>Paso 4.</strong> El límite es finito, por lo tanto la serie converge y</p>
+      <p style="text-align:center">\[ \sum_{n=1}^{\infty}\frac1{2^n}=1 \]</p>
+      <div class="nota green">Fijate la distinción en acción: \(\displaystyle\sum_{n=1}^{5}\frac1{2^n}=\frac{31}{32}=0{,}96875\) es una <strong>suma parcial</strong> (número concreto, calculable),
+      mientras que \(\displaystyle\sum_{n=1}^{\infty}\frac1{2^n}=1\) es la <strong>serie completa</strong> (un límite).</div>
+    </div>
+  </details>
+  <p class="no-print" style="text-align:center;margin-top:18px"><button class="btn green" onclick="ir('laboratorio')">Verlo en movimiento: al laboratorio</button></p>
+</section>
+
+<!-- ================= 5. LABORATORIO ================= -->
+<section id="laboratorio">
+  <span class="eyebrow v">Paso 4 · Laboratorio interactivo</span>
+  <h2>Dos gráficos en uno: \(a_n\) contra \(S_n\)</h2>
+  <div class="nota"><strong>La pregunta del laboratorio:</strong> si los puntos azules (\(a_n\)) bajan hacia el eje,
+  ¿los verdes (\(S_n\)) están <em>obligados</em> a estabilizarse? Para cada serie vas a tener que predecir antes de leer la conclusión — equivocarse acá es parte del método.</div>
+
+  <div class="card">
+    <div class="lab-controles">
+      <button class="chip activo" data-serie="geo" onclick="labSerie('geo',this)">\(a_n=\tfrac1{2^n}\) (geométrica)</button>
+      <button class="chip" data-serie="arm" onclick="labSerie('arm',this)">\(a_n=\tfrac1n\) (armónica)</button>
+      <button class="chip" data-serie="cte" onclick="labSerie('cte',this)">\(a_n=1\) (constante)</button>
+      <button class="chip" data-serie="alt" onclick="labSerie('alt',this)">\(a_n=(-1)^{n+1}\) (alternada)</button>
+    </div>
+    <div class="lab-controles">
+      <label style="font-weight:600;font-size:.9rem">Cantidad de términos: <span id="labNval" style="color:var(--amber);font-weight:800">10</span></label>
+      <input type="range" id="labN" min="1" max="30" value="10" oninput="labDibujar()">
+    </div>
+    <div class="leyenda">
+      <span><span class="pt" style="background:var(--blue)"></span>Términos \(a_n\)</span>
+      <span><span class="pt" style="background:var(--green)"></span>Sumas parciales \(S_n\)</span>
+      <span><span class="pt" style="background:var(--amber);border-radius:0;height:3px;width:20px"></span>Valor límite (si existe)</span>
+    </div>
+    <div class="nota" id="predBox"><strong>Predecí antes de concluir:</strong> para esta serie, ¿qué va a hacer \(S_n\) (los puntos verdes) a medida que \(n\) crece?
+      <div class="pred-chips" style="margin-top:8px">
+        <button class="chip" onclick="predecir('estab',this)">Se estabiliza en un número</button>
+        <button class="chip" onclick="predecir('crece',this)">Crece sin límite</button>
+        <button class="chip" onclick="predecir('oscila',this)">Oscila sin decidirse</button>
+      </div>
+      <div id="predVeredicto" style="margin-top:8px;display:none;font-weight:600"></div>
+    </div>
+    <canvas id="canvasLab" width="860" height="380"></canvas>
+    <div id="labDiag" class="nota amber" style="margin-top:12px"></div>
+    <div class="tabla-scroll"><table id="labTabla"></table></div>
+    <div class="nota rust" style="font-size:.88rem"><strong>Evidencia ≠ demostración:</strong> el gráfico llega hasta \(n=30\) y solo <em>sugiere</em> una hipótesis sobre infinitos términos. La justificación matemática siempre pasa por estudiar \(\lim S_n\) — y, cuando hace falta, por argumentos generales como el de agrupamiento que viste en la teoría (bloque 5).</div>
+  </div>
+
+  <div class="card">
+    <h3>Después de explorar</h3>
+    <div class="opciones" style="margin-top:10px">
+      <button onclick="revelar2(this,'En la geométrica, los verdes se «pegan» a la línea de 1: la serie converge y vale 1. En la armónica, los azules también bajan a 0… pero los verdes siguen subiendo sin techo: la serie diverge. Ahí está la refutación de la hipótesis ingenua: <strong>\\(a_n\\to0\\) no alcanza</strong>.')">Compará la geométrica con la armónica. ¿Qué tienen igual y qué distinto?</button>
+      <button onclick="revelar2(this,'En la alternada los términos no van a 0 (valen siempre 1 o −1) y los acumulados quedan saltando entre 1 y 0: \\(\\lim S_n\\) no existe. Es la tercera forma de divergir: <strong>por oscilación</strong>, sin irse a infinito.')">¿Qué le pasa a \(S_n\) en la alternada?</button>
+      <button onclick="revelar2(this,'Con \\(a_n=1\\), cada suma parcial vale \\(S_n=n\\): una escalera recta hacia \\(+\\infty\\). Es el «test de divergencia» en su versión más cruda: si los términos no se achican hacia 0, no hay chance de que el acumulado se estabilice.')">¿Por qué la constante diverge tan rápido?</button>
+    </div>
+    <div id="revelado2" class="nota green" style="display:none"></div>
+  </div>
+  <p class="no-print" style="text-align:center"><button class="btn" onclick="ir('practica')">A practicar</button></p>
+</section>
+
+<!-- ================= 5b. CONTRAEJEMPLOS ================= -->
+<section id="contraejemplos">
+  <span class="eyebrow r">Contraejemplos fundamentales</span>
+  <h2>Tres intuiciones que este tema derriba</h2>
+  <p>Un <strong>contraejemplo</strong> es un caso concreto que demuestra que una afirmación general es <em>falsa</em>. En series, aprender a desconfiar de las intuiciones rápidas es media batalla ganada. Estos tres ya los viste en acción en el laboratorio — ahora con nombre propio:</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Afirmación falsa</th><th>Contraejemplo</th><th>Qué enseña</th></tr>
+    <tr>
+      <td>«Si \(a_n\to0\), entonces \(\sum a_n\) converge.»</td>
+      <td>\(\displaystyle\sum_{n=1}^{\infty}\frac1n\): los términos van a 0 y aun así \(S_n\to+\infty\).</td>
+      <td>\(a_n\to0\) es condición <strong>necesaria</strong>, no suficiente.</td>
+    </tr>
+    <tr>
+      <td>«Si una serie diverge, entonces \(S_n\to+\infty\).»</td>
+      <td>\(\displaystyle\sum_{n=1}^{\infty}(-1)^{n+1}\): las sumas parciales quedan en \(1,0,1,0,\dots\)</td>
+      <td>También se diverge <strong>por oscilación</strong>, sin irse a infinito.</td>
+    </tr>
+    <tr>
+      <td>«Calculando \(\lim a_n\) ya conozco la suma de la serie.»</td>
+      <td>\(\displaystyle\sum_{n=1}^{\infty}\frac1{2^n}\): \(\lim a_n=0\), pero la serie vale \(1\).</td>
+      <td>La suma sale de \(\lim S_n\), que es <strong>otro</strong> límite.</td>
+    </tr>
+  </table></div>
+  <div class="nota amber"><strong>Truco de estudio:</strong> cuando leas una afirmación general sobre series («si pasa tal cosa, entonces…»), probala contra estas cuatro series de bolsillo: \(\tfrac1{2^n}\), \(\tfrac1n\), \(1\) y \((-1)^{n+1}\). Si alguna la rompe, la afirmación es falsa — y ya tenés el contraejemplo para justificarlo.</div>
+</section>
+
+<!-- ================= 5c. SERIE GEOMÉTRICA ================= -->
+<section id="geometrica">
+  <span class="eyebrow a">La aplicación estrella</span>
+  <h2>Serie geométrica: la familia donde el método rinde completo</h2>
+  <p>Hasta acá aprendiste el <strong>método</strong>: construir \(S_n\) y estudiar \(\lim S_n\). La serie geométrica \(\displaystyle\sum_{n=1}^{\infty}a\cdot r^{\,n-1}\) es la primera familia entera de series donde ese método funciona de punta a punta: hay fórmula cerrada de \(S_n\), el límite se calcula, y el veredicto de convergencia sale de mirar <em>un solo número</em>: la razón \(r\).</p>
+
+  <details class="bloque" open>
+    <summary><span class="num">G1</span> Definición y formato: ¿qué es una serie geométrica?</summary>
+    <div class="contenido">
+      <p>Una <strong>serie geométrica</strong> es la serie cuyo término general es \(a_n=a\cdot r^{\,n-1}\), con \(a\) y \(r\) fijos:</p>
+      <p style="text-align:center">\[ \boxed{\ \sum_{n=1}^{\infty} a\cdot r^{\,n-1} \;=\; a+ar+ar^2+ar^3+\cdots\ } \]</p>
+      <p>Los dos datos que la definen por completo: \(a\) es el <strong>primer término</strong> (evaluá \(n=1\): \(a\cdot r^0=a\)) y \(r\) es la <strong>razón</strong>, el factor fijo que separa cada término del siguiente.</p>
+      <p>Acá vale la distinción central de toda esta experiencia, aplicada al caso geométrico:</p>
+      <div class="tabla-scroll"><table>
+        <tr><th>Objeto</th><th>Qué es</th><th>Ejemplo con \(a=6\), \(r=\tfrac12\)</th></tr>
+        <tr><td><strong>Sucesión geométrica</strong> \((a_n)\)</td><td>La <em>lista</em>: \(a_n=a\cdot r^{\,n-1}\)</td><td>\(6,\ 3,\ \tfrac32,\ \tfrac34,\ \dots\)</td></tr>
+        <tr><td><strong>Serie geométrica</strong> \(\sum a_n\)</td><td>La <em>suma infinita</em> de esa lista</td><td>\(\displaystyle\sum_{n=1}^{\infty}6\cdot\left(\tfrac12\right)^{n-1}=6+3+\tfrac32+\cdots\)</td></tr>
+      </table></div>
+      <div class="nota"><strong>Los dos formatos de escritura (misma serie):</strong> según dónde arranque el índice, vas a encontrarla como
+      \(\displaystyle\sum_{n=1}^{\infty} a\cdot r^{\,n-1}\) o como \(\displaystyle\sum_{n=0}^{\infty} a\cdot r^{\,n}\). No hay que memorizar índices: el control infalible es <strong>evaluar el índice inicial</strong> y verificar que dé el primer término. En ambas escrituras, la primera evaluación da \(a\). ✓</div>
+      <p><strong>Y al revés: del formato expandido al formato \(\sum\).</strong> Si la serie viene «desplegada», los dos datos se leen así: \(a\) es el término que abre la suma, y \(r=\dfrac{a_{n+1}}{a_n}\), el cociente entre consecutivos (que debe dar <em>siempre lo mismo</em>). En \(6+3+\tfrac32+\tfrac34+\cdots\): \(a=6\), \(r=\tfrac36=\tfrac12\) (control: \(\tfrac{3/2}{3}=\tfrac12\) ✓), y la serie se escribe \(\displaystyle\sum_{n=1}^{\infty}6\cdot\left(\tfrac12\right)^{n-1}\).</p>
+      <p>La razón puede ser <strong>negativa</strong>: \(\displaystyle\sum_{n=1}^{\infty}5\cdot(-2)^{n-1}=5-10+20-40+\cdots\) — los signos alternan solos.</p>
+      <div class="nota amber"><strong>Control rápido:</strong> si el cociente entre términos consecutivos <em>no da siempre lo mismo</em>, la serie no es geométrica. La armónica \(\sum\tfrac1n\) no lo es: \(\tfrac{1/2}{1}=\tfrac12\) pero \(\tfrac{1/3}{1/2}=\tfrac23\). Distinto → afuera, y nada de esta sección se le aplica.</div>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">G2</span> La fórmula de \(S_n\): el mismo truco, ahora en general</summary>
+    <div class="contenido">
+      <p>Como con cualquier serie, el método manda: primero la suma parcial. Para la serie geométrica \(\displaystyle\sum_{n=1}^{\infty}a\cdot r^{\,n-1}\), la suma parcial es</p>
+      <p style="text-align:center">\[ S_n=\sum_{k=1}^{n}a\cdot r^{\,k-1}=a+ar+ar^2+\cdots+ar^{\,n-1} \]</p>
+      <p>En la teoría (bloque 7) dedujiste \(S_n=1-\tfrac1{2^n}\) multiplicando por 2 y restando. Ese truco no era un caso de suerte: funciona para <strong>toda</strong> la familia, multiplicando por la razón \(r\) (cada término «corre un lugar»):</p>
+      <p style="text-align:center">\[ r\,S_n=ar+ar^2+\cdots+ar^{n} \]</p>
+      <p>Al restar, casi todo se cancela y sobreviven los extremos:</p>
+      <p style="text-align:center">\[ S_n-r\,S_n=a-ar^{n} \qquad\Rightarrow\qquad S_n\,(1-r)=a\,(1-r^{n}) \]</p>
+      <p style="text-align:center">\[ \boxed{\ S_n=a\cdot\frac{1-r^{n}}{1-r}\ }\qquad(\text{vale si } r\neq1) \]</p>
+      <p><strong>Verificación con lo que ya conocés:</strong> con \(a=\tfrac12\) y \(r=\tfrac12\) da
+      \(S_n=\tfrac12\cdot\dfrac{1-\tfrac1{2^n}}{\tfrac12}=1-\dfrac1{2^n}\). La fórmula del bloque 7 era este caso particular. ✓</p>
+      <div class="nota"><strong>¿Y si \(r=1\)?</strong> La fórmula divide por \(1-r\), así que ese caso queda afuera… pero no hace falta fórmula: si \(r=1\) todos los términos valen \(a\), y entonces \(S_n=n\cdot a\). Es la serie constante que ya viste en el laboratorio.</div>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">G3</span> El veredicto completo: todo depende de \(r\)</summary>
+    <div class="contenido">
+      <p>Ahora aplicamos el método general: la serie converge si y solo si \(\lim S_n\) existe y es finito. En la fórmula \(S_n=a\cdot\frac{1-r^n}{1-r}\), lo único que se mueve con \(n\) es \(r^n\). Todo el destino de la serie está en esa potencia:</p>
+      <div class="tabla-scroll"><table>
+        <tr><th>Razón</th><th>¿Qué hace \(r^n\)?</th><th>¿Qué hace \(S_n\)?</th><th>Veredicto</th></tr>
+        <tr><td>\(|r|<1\) (ej.: \(\tfrac12\), \(-0{,}8\))</td><td>\(r^n\to0\)</td><td>\(S_n\to\dfrac{a}{1-r}\)</td><td><strong style="color:var(--green)">Converge</strong></td></tr>
+        <tr><td>\(r=1\)</td><td>siempre 1</td><td>\(S_n=n\cdot a\): escalera</td><td><strong style="color:var(--rust)">Diverge</strong></td></tr>
+        <tr><td>\(r=-1\)</td><td>salta: \(-1,1,-1,\dots\)</td><td>\(S_n\) oscila: \(a,0,a,0,\dots\)</td><td><strong style="color:var(--rust)">Diverge</strong> (por oscilación)</td></tr>
+        <tr><td>\(|r|>1\) (ej.: \(\tfrac32\), \(-2\))</td><td>\(|r^n|\to\infty\)</td><td>\(S_n\) explota (o explota oscilando)</td><td><strong style="color:var(--rust)">Diverge</strong></td></tr>
+      </table></div>
+      <p>Y cuando converge, la suma tiene fórmula cerrada — el resultado central de esta sección:</p>
+      <p style="text-align:center">\[ \boxed{\ \text{Si } |r|<1:\qquad \sum_{n=1}^{\infty}a\cdot r^{\,n-1}=\frac{a}{1-r}=\frac{\text{primer término}}{1-r}\ } \]</p>
+      <div class="nota amber"><strong>Advertencia clave (acá caen todos):</strong> la fórmula \(\frac{\text{primer término}}{1-r}\) <em>solo tiene sentido si</em> \(|r|<1\). Con \(r=-1\) la cuenta \(\tfrac{a}{2}\) da un número… que no significa nada, porque la serie ni siquiera converge. Primero se mira \(|r|\), después (y solo si \(|r|<1\)) se usa la fórmula.</div>
+    </div>
+  </details>
+
+  <details class="bloque">
+    <summary><span class="num">G4</span> La aplicación que rompe la cabeza: \(0{,}999\ldots=1\)</summary>
+    <div class="contenido">
+      <p>Un decimal periódico es, en secreto, una serie geométrica. Mirá:</p>
+      <p style="text-align:center">\[ 0{,}999\ldots=\frac9{10}+\frac9{100}+\frac9{1000}+\cdots=\sum_{n=1}^{\infty}\frac{9}{10^n} \qquad\text{con } a=\frac9{10},\ r=\frac1{10} \]</p>
+      <p>Como \(|r|=\tfrac1{10}<1\), converge, y la suma es:</p>
+      <p style="text-align:center">\[ \sum=\frac{\text{primer término}}{1-r}=\frac{9/10}{1-\tfrac1{10}}=\frac{9/10}{9/10}=1 \]</p>
+      <p>No es «casi 1», no es «tiende a 1 pero no llega»: la serie <strong>vale exactamente 1</strong>, porque su valor es \(\lim S_n\), y ese límite es 1. Es el mismo fenómeno de la caminata de Zenón del comienzo: infinitos pasos, distancia total finita y exacta.</p>
+      <p>El mismo mecanismo convierte cualquier periódico en fracción: \(0{,}333\ldots=\frac{3/10}{1-\tfrac1{10}}=\frac{3/10}{9/10}=\dfrac13\). ✓ (Coincide con lo que ya sabías de \(\tfrac13\).)</p>
+    </div>
+  </details>
+
+  <h2 style="margin-top:34px">Mini-laboratorio: el poder de \(r\)</h2>
+  <p>La serie en pantalla es \(\displaystyle\sum_{n=1}^{\infty}r^{\,n-1}\) (primer término fijo \(a=1\)); lo único que cambia es la razón. Mirá cómo un solo número decide todo el destino de la serie.</p>
+  <div class="card">
+    <div class="lab-controles">
+      <button class="chip activo" data-geo="r12" onclick="geoSerie('r12',this)">\(r=\tfrac12\)</button>
+      <button class="chip" data-geo="r23" onclick="geoSerie('r23',this)">\(r=\tfrac23\)</button>
+      <button class="chip" data-geo="r1" onclick="geoSerie('r1',this)">\(r=1\)</button>
+      <button class="chip" data-geo="rm1" onclick="geoSerie('rm1',this)">\(r=-1\)</button>
+      <button class="chip" data-geo="r32" onclick="geoSerie('r32',this)">\(r=\tfrac32\)</button>
+    </div>
+    <div class="lab-controles">
+      <label style="font-weight:600;font-size:.9rem">Cantidad de términos: <span id="geoNval" style="color:var(--amber);font-weight:800">10</span></label>
+      <input type="range" id="geoN" min="1" max="15" value="10" oninput="dibujarGeo()">
+    </div>
+    <div class="leyenda">
+      <span><span class="pt" style="background:var(--blue)"></span>Términos \(a_n\)</span>
+      <span><span class="pt" style="background:var(--green)"></span>Sumas parciales \(S_n\)</span>
+      <span><span class="pt" style="background:var(--amber);border-radius:0;height:3px;width:20px"></span>Suma de la serie (si converge)</span>
+    </div>
+    <div class="nota" id="predBoxGeo"><strong>Predecí antes de concluir:</strong> con esta razón, ¿qué va a hacer \(S_n\)?
+      <div class="pred-chips" style="margin-top:8px">
+        <button class="chip" onclick="predecirGeo('estab',this)">Se estabiliza en un número</button>
+        <button class="chip" onclick="predecirGeo('crece',this)">Crece sin límite</button>
+        <button class="chip" onclick="predecirGeo('oscila',this)">Oscila sin decidirse</button>
+      </div>
+      <div id="predVeredictoGeo" style="margin-top:8px;display:none;font-weight:600"></div>
+    </div>
+    <canvas id="canvasGeo" width="860" height="380"></canvas>
+    <div id="geoDiag" class="nota amber" style="margin-top:12px"></div>
+  </div>
+
+  <h2 style="margin-top:34px">Práctica de serie geométrica</h2>
+  <p>Seis ejercicios con el mismo sistema de siempre: pistas graduadas, mini-repaso si errás, y solución explicada. Van de reconocer a transferir.</p>
+  <div id="geoEjercicios"></div>
+</section>
+
+<!-- ================= 6. PRÁCTICA ADAPTATIVA ================= -->
+<section id="practica">
+  <span class="eyebrow a">Paso 5 · Práctica adaptativa</span>
+  <h2>Cinco niveles, un recorrido a tu medida</h2>
+  <p id="practicaReco" class="nota amber">Todavía no hiciste el diagnóstico. Podés empezar por el Nivel 1, o <a href="#" onclick="ir('diagnostico');return false">hacer el diagnóstico</a> para recibir una recomendación.</p>
+  <div class="nota"><strong>Cómo funciona la adaptación:</strong> si acertás a la primera dos veces seguidas, la página te sugiere subir de nivel.
+  Si errás, no te suelta: se abre un <em>mini-repaso</em> con un caso más simple antes del segundo intento. Cada error queda registrado y arma tu ruta de repaso al final.</div>
+  <div class="niveles-tabs" id="nivelesTabs"></div>
+  <div id="ejerciciosCont"></div>
+</section>
+
+<!-- ================= 7. ERRORES RECURRENTES ================= -->
+<section id="errores">
+  <span class="eyebrow r">Paso 6 · Errores frecuentes que conviene detectar</span>
+  <h2>El radar de confusiones</h2>
+  <div class="tabla-scroll"><table>
+    <tr><th>Error</th><th>Por qué ocurre</th><th>Cómo detectarlo</th><th>Cómo corregirlo</th></tr>
+    <tr>
+      <td>Confundir \(a_n\) con \(S_n\)</td>
+      <td>Ambos llevan subíndice \(n\) y viven en el mismo problema; el ojo los trata como sinónimos.</td>
+      <td>Preguntarse: «¿esto es <em>un</em> término de la lista o <em>lo acumulado</em> hasta acá?» Si hay signos +, es \(S_n\).</td>
+      <td>Armar siempre la tabla de dos columnas (\(a_n\) | \(S_n\)) antes de calcular nada.</td>
+    </tr>
+    <tr>
+      <td>Creer que \(a_n\to0\) garantiza que la serie converge</td>
+      <td>Es intuitivo: «si sumo cosas cada vez más chicas, el total no puede explotar».</td>
+      <td>Contrastar con la serie armónica: \(\tfrac1n\to0\) y sin embargo \(S_n\to+\infty\).</td>
+      <td>Recordar que \(\lim a_n=0\) es condición <strong>necesaria</strong>, no suficiente. La decisión final es sobre \(\lim S_n\).</td>
+    </tr>
+    <tr>
+      <td>Confundir la suma parcial con la serie completa</td>
+      <td>La notación \(\sum\) se usa en ambas; solo cambia el tope (\(n\) o \(\infty\)).</td>
+      <td>Mirar el límite superior de la sumatoria: si es un número o \(n\), es finita; si es \(\infty\), es la serie.</td>
+      <td>Verbalizar: «\(S_5=\tfrac{31}{32}\) es lo acumulado en 5 pasos; la serie \(=1\) es el destino del proceso».</td>
+    </tr>
+    <tr>
+      <td>Pensar que divergir es solo «irse a infinito»</td>
+      <td>Los primeros ejemplos de divergencia suelen ser \(S_n\to+\infty\), y esa imagen se fija.</td>
+      <td>Analizar \(\sum(-1)^{n+1}\): las sumas parciales dan \(1,0,1,0,\dots\) — no explotan, pero tampoco se estabilizan.</td>
+      <td>Definición completa: diverge si \(\lim S_n\) es \(\pm\infty\) <strong>o no existe</strong> (oscilación).</td>
+    </tr>
+    <tr>
+      <td>Calcular \(\lim a_n\) y anunciarlo como «la suma de la serie»</td>
+      <td>Se resuelve mecánicamente el único límite que aparece a mano, sin interpretar qué representa.</td>
+      <td>Preguntarse: «¿este límite habla de los términos o de los acumulados?»</td>
+      <td>Antes de calcular, escribir explícitamente qué objeto se está analizando: \(\lim a_n\) estudia la sucesión; \(\lim S_n\) decide la serie.</td>
+    </tr>
+    <tr>
+      <td>Aplicar una fórmula de \(S_n\) sin verificar de qué sucesión viene</td>
+      <td>Las fórmulas cerradas (como \(S_n=1-\tfrac1{2^n}\)) se memorizan sueltas, sin su origen.</td>
+      <td>Chequear con \(n\) chico: ¿\(S_1\) coincide con \(a_1\)? ¿\(S_2=a_1+a_2\)?</td>
+      <td>Validar la fórmula en dos o tres valores antes de tomar el límite.</td>
+    </tr>
+  </table></div>
+</section>
+
+<!-- ================= 8. AUTOEVALUACIÓN ================= -->
+<section id="evaluacion">
+  <span class="eyebrow">Paso 7 · Mini evaluación formativa</span>
+  <h2>Ocho ítems para medir tu dominio</h2>
+  <p>Conceptos, procedimientos, interpretación y detección de errores. Al final: puntaje y recomendación personalizada.</p>
+  <div id="evalPreguntas"></div>
+  <div id="evalResultado"></div>
+</section>
+
+<!-- ================= 9. CIERRE METACOGNITIVO ================= -->
+<section id="cierre">
+  <span class="eyebrow g">Paso 8 · Cierre metacognitivo</span>
+  <h2>Mirar el propio recorrido</h2>
+  <div class="card">
+    <h3>Síntesis matemática final</h3>
+    <p>Para estudiar una serie no alcanza con mirar los términos aislados. Primero se construye la sucesión de sumas parciales \(S_n\); después se analiza su límite:</p>
+    <p style="text-align:center">\[ \boxed{\ \sum_{n=1}^{\infty}a_n \text{ converge } \Longleftrightarrow \lim_{n\to\infty}S_n=L\in\mathbb{R}\ } \]</p>
+    <p style="text-align:center">\[ \boxed{\ a_n\to0 \text{ es necesario, pero no suficiente}\ } \]</p>
+    <p>Y el test rápido para descartar: si \(a_n\) <strong>no tiende a 0</strong> (su límite es distinto de 0 o no existe), la serie diverge automáticamente. Si \(a_n\to0\), el problema sigue abierto — y lo decide \(\lim S_n\).</p>
+  </div>
+  <div class="card">
+    <p><strong>1. ¿Qué entendí mejor después de esta actividad?</strong></p>
+    <textarea id="meta1" placeholder="Por ejemplo: la diferencia entre el límite de los términos y el de los acumulados…" oninput="guardarMeta()"></textarea>
+    <p style="margin-top:14px"><strong>2. ¿Qué error puedo evitar de ahora en adelante?</strong></p>
+    <textarea id="meta2" placeholder="Por ejemplo: no voy a concluir convergencia solo porque aₙ tiende a 0…" oninput="guardarMeta()"></textarea>
+    <p style="margin-top:14px"><strong>3. ¿Qué parte necesito seguir practicando?</strong></p>
+    <textarea id="meta3" placeholder="Por ejemplo: calcular sumas parciales con fracciones…" oninput="guardarMeta()"></textarea>
+    <p style="margin-top:14px"><strong>4. ¿Qué estrategia me resultó más útil?</strong></p>
+    <textarea id="meta4" placeholder="Por ejemplo: la tabla de dos columnas aₙ | Sₙ…" oninput="guardarMeta()"></textarea>
+    <p class="no-print" style="margin-top:16px"><button class="btn green" onclick="generarResumen()">Generar mi resumen final</button></p>
+  </div>
+  <div id="resumenFinal"></div>
+</section>
+
+<!-- ================= 10. REPORTE ================= -->
+<section id="reporte">
+  <span class="eyebrow v">Paso 9 · Reporte de aprendizaje</span>
+  <h2>Tu reporte exportable</h2>
+  <div class="card no-print">
+    <label style="font-weight:700">Nombre y apellido del estudiante:</label><br>
+    <input type="text" id="nombreEst" placeholder="Escribí tu nombre completo" oninput="guardarNombre()" style="margin:8px 0 14px">
+    <br>
+    <button class="btn" onclick="generarReporte()">Generar reporte</button>
+  </div>
+  <div id="reporteTexto" style="display:none"></div>
+  <div class="no-print" id="reporteBotones" style="display:none;margin-top:12px">
+    <button class="btn sec" onclick="copiarReporte()">Copiar reporte</button>
+    <button class="btn sec" onclick="descargarReporte()">Descargar .txt</button>
+    <button class="btn sec" onclick="window.print()">Imprimir / PDF</button>
+    <span id="copiadoOk" style="display:none;color:var(--green);font-weight:700;margin-left:8px">✓ Copiado</span>
+  </div>
+  <p class="no-print" style="margin-top:26px"><button class="btn ghost" onclick="abrirReset()">Reiniciar todo el progreso</button></p>
+  <p style="text-align:center;color:var(--ink-soft);font-size:.82rem;margin-top:40px">laboratoriobest-IA · Escuela Técnica Philips · 5.º año — Prof. Ariel L. Cardozo Delgado</p>
+</section>
+
+<!-- ================= MODAL RESET ================= -->
+<div id="modalReset">
+  <div class="caja">
+    <h3 style="margin-bottom:10px">¿Reiniciar todo el progreso?</h3>
+    <p style="font-size:.92rem">Se borran el diagnóstico, la práctica, la evaluación y las reflexiones guardadas en este dispositivo. Esta acción no se puede deshacer.</p>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button class="btn rust" onclick="resetTotal()">Sí, reiniciar</button>
+      <button class="btn sec" onclick="cerrarReset()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ESTADO GLOBAL + PERSISTENCIA (localStorage con guardas)
+   ============================================================ */
+const CLAVE='lab_sucesiones_series_v1';
+let S={
+  nombre:'',
+  diag:{respuestas:{}, puntaje:null, nivel:null},
+  practica:{},           // id -> {resuelto, intentos, pistas, primeraOk, metacog}
+  racha:{},              // nivel -> racha de aciertos a la primera
+  mis:{M1:0,M2:0,M3:0,M4:0,M5:0},
+  eval:{respuestas:{}, puntaje:null},
+  meta:{m1:'',m2:'',m3:'',m4:''},
+  labPred:{},            // serie -> predicción del estudiante (estab/crece/oscila)
+  geoPred:{},            // razón -> predicción en el mini-lab geométrico
+  nivelActivo:1
+};
+function guardar(){
+  try{ localStorage.setItem(CLAVE, JSON.stringify(S)); }catch(e){/* almacenamiento no disponible: la sesión sigue en memoria */}
+}
+function cargar(){
+  try{
+    const g=localStorage.getItem(CLAVE);
+    if(g){ const o=JSON.parse(g); S=Object.assign(S,o); S.mis=Object.assign({M1:0,M2:0,M3:0,M4:0,M5:0},o.mis||{}); }
+  }catch(e){}
+}
+
+/* Etiquetas de obstáculos (modelo del alumno liviano) */
+const MIS_LBL={
+  M1:'Confundir el término aₙ con la suma parcial Sₙ',
+  M2:'Creer que aₙ→0 garantiza la convergencia de la serie',
+  M3:'Confundir una suma parcial (finita) con la serie completa (infinita)',
+  M4:'No reconocer la divergencia por oscilación',
+  M5:'Confundir lim aₙ con lim Sₙ'
+};
+const MIS_RUTA={
+  M1:'Releé los bloques 2 y 3 de la teoría y rehacé los ejercicios del Nivel 1.',
+  M2:'Volvé al laboratorio y comparé la geométrica con la armónica; después reintentá el Nivel 4.',
+  M3:'Releé el bloque 4 y el ejemplo guiado (bloque 7); practicá el Nivel 3.',
+  M4:'Explorá la serie alternada en el laboratorio y revisá la fila de oscilación en la tabla de errores.',
+  M5:'Repasá la tabla «lim aₙ vs lim Sₙ» del bloque 5 antes de reintentar los Niveles 3 y 4.'
+};
+
+/* ============================================================
+   NAVEGACIÓN (patrón ir() con scrollTop — apto móvil)
+   ============================================================ */
+function ir(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const raiz=document.scrollingElement||document.documentElement;
+  const y=el.getBoundingClientRect().top+raiz.scrollTop-58;
+  raiz.scrollTop=y<0?0:y;
+}
+window.addEventListener('scroll',()=>{
+  const raiz=document.scrollingElement||document.documentElement;
+  const p=raiz.scrollTop/(raiz.scrollHeight-raiz.clientHeight);
+  document.getElementById('barraProgreso').style.width=(p*100)+'%';
+},{passive:true});
+
+/* ============================================================
+   ACTIVACIÓN: revelado socrático
+   ============================================================ */
+function revelar(btn,html){
+  const box=document.getElementById('revelado');
+  box.style.display='block'; box.innerHTML=html; rmath(box);
+  btn.style.borderColor='var(--amber)';
+}
+function revelar2(btn,html){
+  const box=document.getElementById('revelado2');
+  box.style.display='block'; box.innerHTML=html; rmath(box);
+  btn.style.borderColor='var(--green)';
+}
+function rmath(el){
+  if(window.renderMathInElement) renderMathInElement(el,{delimiters:[
+    {left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}
+  ]});
+}
+
+/* ============================================================
+   DIAGNÓSTICO INICIAL
+   ============================================================ */
+const DIAG=[
+ {q:'¿Qué es una <strong>sucesión</strong>?',
+  ops:[
+   {t:'Una lista ordenada e infinita de números que sigue una regla.',ok:true,fb:'Exacto: una fila de términos, cada uno con su posición \\(n\\).'},
+   {t:'La suma de infinitos números.',fb:'Esa es la idea de <em>serie</em>. La sucesión es la lista, todavía sin sumar nada.'},
+   {t:'El resultado de sumar los primeros \\(n\\) números.',fb:'Eso describe una <em>suma parcial</em> \\(S_n\\), no la lista original.'},
+   {t:'Cualquier conjunto de números sin orden.',fb:'El orden es esencial: en una sucesión importa quién es el término 1, el 2, el 3…'}
+  ]},
+ {q:'Si \\(a_n=\\dfrac1n\\), ¿cuánto vale \\(a_3\\)?',
+  ops:[
+   {t:'\\(\\tfrac13\\)',ok:true,fb:'Bien: se reemplaza \\(n=3\\) en la fórmula del término general.'},
+   {t:'\\(\\tfrac{11}{6}\\)',fb:'Ese valor es \\(S_3=1+\\tfrac12+\\tfrac13\\): confundiste el término con lo acumulado.'},
+   {t:'\\(3\\)',fb:'Cuidado: \\(a_3\\) se obtiene reemplazando en \\(\\tfrac1n\\), no es el índice.'},
+   {t:'\\(0\\)',fb:'\\(0\\) es el <em>límite</em> de la sucesión, no su tercer término.'}
+  ]},
+ {q:'¿Qué representa \\(S_4\\)?',
+  ops:[
+   {t:'El cuarto término de la sucesión, \\(a_4\\).',fb:'\\(S_4\\) no es un término suelto: la letra \\(S\\) avisa que hay una suma adentro.'},
+   {t:'\\(a_1+a_2+a_3+a_4\\)',ok:true,fb:'Correcto: la suma parcial acumula los primeros 4 términos.'},
+   {t:'La suma infinita completa.',fb:'La suma infinita es la serie; \\(S_4\\) se corta en el cuarto término.'},
+   {t:'El límite de la sucesión.',fb:'El límite es otro objeto: \\(S_4\\) es un número concreto que se calcula sumando 4 términos.'}
+  ]},
+ {q:'Si \\(\\displaystyle\\lim_{n\\to\\infty}a_n=0\\), ¿qué se puede afirmar sobre \\(\\sum_{n=1}^{\\infty}a_n\\)?',
+  ops:[
+   {t:'Converge seguro.',fb:'Es la trampa clásica: la serie armónica tiene \\(a_n\\to0\\) y diverge igual.'},
+   {t:'Diverge seguro.',fb:'Tampoco: \\(\\sum\\tfrac1{2^n}\\) tiene \\(a_n\\to0\\) y converge. No hay conclusión automática.'},
+   {t:'Puede converger o divergir: hace falta más análisis.',ok:true,fb:'Exacto. \\(a_n\\to0\\) es condición necesaria pero no suficiente.'},
+   {t:'La serie vale 0.',fb:'El límite de los términos no es la suma de la serie: son dos límites distintos.'}
+  ]},
+ {q:'Para decidir si una serie converge, el límite que hay que estudiar es…',
+  ops:[
+   {t:'\\(\\lim a_n\\), el de los términos.',fb:'Ese límite solo da una pista (si \\(a_n\\) no tiende a 0, diverge). La decisión final no pasa por ahí.'},
+   {t:'\\(\\lim S_n\\), el de las sumas parciales.',ok:true,fb:'Correcto: la serie converge si y solo si \\(S_n\\) tiene límite finito.'},
+   {t:'El límite del índice \\(n\\).',fb:'\\(n\\to\\infty\\) es solo el proceso; el límite que decide es el de \\(S_n\\).'},
+   {t:'Cualquiera de los dos, dan lo mismo.',fb:'No dan lo mismo: en \\(\\sum\\tfrac1{2^n}\\), \\(\\lim a_n=0\\) pero \\(\\lim S_n=1\\).'}
+  ]},
+ {q:'La notación \\(\\displaystyle\\sum_{n=1}^{\\infty}a_n\\) representa…',
+  ops:[
+   {t:'La suma de los primeros \\(n\\) términos.',fb:'Eso sería \\(\\sum_{k=1}^{n}a_k=S_n\\). Mirá el tope de la sumatoria: acá dice \\(\\infty\\).'},
+   {t:'La suma infinita asociada a la sucesión \\(a_n\\).',ok:true,fb:'Bien: el tope \\(\\infty\\) indica que es la serie completa.'},
+   {t:'El término general de la sucesión.',fb:'El término general es \\(a_n\\) solo; la \\(\\sum\\) indica que se está sumando.'},
+   {t:'El promedio de los términos.',fb:'No hay división por la cantidad: es una suma, no un promedio.'}
+  ]}
+];
+function pintarDiag(){
+  const cont=document.getElementById('diagPreguntas');
+  cont.innerHTML=DIAG.map((p,i)=>`
+    <div class="card" id="dq${i}">
+      <h3>Pregunta ${i+1}</h3>
+      <p>${p.q}</p>
+      <div class="opciones">${p.ops.map((o,j)=>`<button onclick="respDiag(${i},${j},this)">${o.t}</button>`).join('')}</div>
+      <div class="veredicto" id="dfb${i}"></div>
+    </div>`).join('');
+  // restaurar respuestas previas
+  Object.keys(S.diag.respuestas).forEach(i=>{
+    const j=S.diag.respuestas[i];
+    const card=document.getElementById('dq'+i); if(!card)return;
+    const btns=card.querySelectorAll('.opciones button');
+    btns.forEach(b=>b.disabled=true);
+    const ok=DIAG[i].ops[j].ok;
+    btns[j].classList.add(ok?'correcta':'incorrecta');
+    if(!ok){DIAG[i].ops.forEach((o,k)=>{if(o.ok)btns[k].classList.add('correcta');});}
+    const fb=document.getElementById('dfb'+i);
+    fb.className='veredicto '+(ok?'ok':'warn'); fb.innerHTML=DIAG[i].ops[j].fb;
+  });
+  rmath(cont);
+  if(S.diag.nivel) mostrarResDiag();
+}
+function respDiag(i,j,btn){
+  if(S.diag.respuestas[i]!==undefined) return;
+  S.diag.respuestas[i]=j;
+  const p=DIAG[i], ok=!!p.ops[j].ok;
+  const card=document.getElementById('dq'+i);
+  card.querySelectorAll('.opciones button').forEach(b=>b.disabled=true);
+  btn.classList.add(ok?'correcta':'incorrecta');
+  if(!ok){card.querySelectorAll('.opciones button').forEach((b,k)=>{if(p.ops[k].ok)b.classList.add('correcta');});}
+  const fb=document.getElementById('dfb'+i);
+  fb.className='veredicto '+(ok?'ok':'warn'); fb.innerHTML=p.ops[j].fb; rmath(fb);
+  if(Object.keys(S.diag.respuestas).length===DIAG.length) cerrarDiag();
+  guardar();
+}
+function cerrarDiag(){
+  let pts=0;
+  Object.keys(S.diag.respuestas).forEach(i=>{ if(DIAG[i].ops[S.diag.respuestas[i]].ok) pts++; });
+  S.diag.puntaje=pts;
+  S.diag.nivel = pts<=1?1 : pts===2?2 : pts<=4?3 : pts===5?4 : 5;
+  guardar(); mostrarResDiag(); actualizarReco(); pintarTabs();
+  document.getElementById('nav-diagnostico').classList.add('done');
+}
+const NIVEL_TXT={
+  1:'Nivel 1 — Necesitás repasar conceptos previos. Empezá por la teoría (bloques 1 a 3) y arrancá la práctica en el Nivel 1.',
+  2:'Nivel 2 — Comprendés parcialmente. Repasá los bloques donde dudaste y arrancá la práctica en el Nivel 1 o 2.',
+  3:'Nivel 3 — Podés avanzar con guía. Te recomendamos arrancar la práctica en el Nivel 2.',
+  4:'Nivel 4 — Dominás lo básico. Podés arrancar directamente en el Nivel 3.',
+  5:'Nivel 5 — Estás para desafíos. Arrancá en el Nivel 3 o 4 y apuntá al Nivel 5.'
+};
+function nivelInicioReco(){ const n=S.diag.nivel; return n==null?1 : n<=2?1 : n===3?2 : n===4?3 : 4; }
+function mostrarResDiag(){
+  const box=document.getElementById('diagResultado');
+  box.innerHTML=`<div class="resultado-card">
+    <h3>Resultado del diagnóstico: ${S.diag.puntaje}/6</h3>
+    <p>${NIVEL_TXT[S.diag.nivel]}</p>
+    <div class="progreso-wrap"><div class="progreso-fill" style="width:${S.diag.puntaje/6*100}%"></div></div>
+    <button class="btn amber no-print" onclick="ir('activacion')">Seguir a la activación conceptual</button>
+    <button class="btn sec no-print" onclick="S.nivelActivo=nivelInicioReco();pintarTabs();pintarEjercicios();ir('practica')" style="margin-left:8px">Ir directo a la práctica recomendada</button>
+  </div>`;
+}
+function actualizarReco(){
+  const el=document.getElementById('practicaReco');
+  if(S.diag.nivel==null) return;
+  el.className='nota green';
+  el.innerHTML=`<strong>Según tu diagnóstico (${S.diag.puntaje}/6):</strong> te recomendamos arrancar en el <strong>Nivel ${nivelInicioReco()}</strong>. Igual podés recorrer todos los niveles.`;
+}
+
+/* ============================================================
+   LABORATORIO INTERACTIVO (Canvas)
+   ============================================================ */
+const SERIES_LAB={
+  geo:{a:n=>1/Math.pow(2,n), Sf:n=>1-1/Math.pow(2,n), lim:1,
+       diag:'Los términos \\(a_n\\) (azules) se aplastan contra el eje: \\(a_n\\to0\\). Los acumulados \\(S_n\\) (verdes) trepan pero se frenan contra la línea de 1. La serie <strong>converge</strong> y \\(\\sum_{n=1}^{\\infty}\\tfrac1{2^n}=1\\).',
+       aTxt:n=>frac(1,Math.pow(2,n)), sTxt:n=>frac(Math.pow(2,n)-1,Math.pow(2,n))},
+  arm:{a:n=>1/n, Sf:null, lim:null,
+       diag:'Ojo con la trampa: los azules también van a 0 (\\(\\tfrac1n\\to0\\))… pero los verdes suben sin techo: \\(S_{10}\\approx2{,}93\\), \\(S_{100}\\approx5{,}19\\), y sigue. La serie armónica <strong>diverge</strong>: \\(a_n\\to0\\) no alcanza.',
+       aTxt:n=>frac(1,n), sTxt:null},
+  cte:{a:n=>1, Sf:n=>n, lim:null,
+       diag:'Como \\(\\lim a_n=1\\neq0\\), la serie no tiene ninguna chance: \\(S_n=n\\) es una escalera hacia \\(+\\infty\\). <strong>Diverge</strong> por el test de la condición necesaria.',
+       aTxt:n=>'1', sTxt:n=>String(n)},
+  alt:{a:n=>Math.pow(-1,n+1), Sf:n=>(n%2===1?1:0), lim:null,
+       diag:'Los acumulados quedan saltando: \\(1,0,1,0,\\dots\\) — \\(\\lim S_n\\) <strong>no existe</strong>. La serie <strong>diverge por oscilación</strong>, sin irse a infinito. (Además \\(a_n\\) no tiende a 0: su límite directamente <em>no existe</em>, porque salta entre 1 y −1.)',
+       aTxt:n=>(n%2===1?'1':'−1'), sTxt:n=>(n%2===1?'1':'0')}
+};
+let labActual='geo';
+function frac(num,den){ return den===1?String(num):num+'/'+den; }
+function labSerie(k,btn){
+  labActual=k;
+  document.querySelectorAll('.lab-controles .chip[data-serie]').forEach(c=>c.classList.remove('activo'));
+  btn.classList.add('activo');
+  pintarPred();
+  labDibujar();
+}
+
+/* ---------- Predicción antes de la conclusión ---------- */
+const PRED_OK={geo:'estab',arm:'crece',cte:'crece',alt:'oscila'};
+const PRED_LBL={estab:'se estabiliza en un número',crece:'crece sin límite',oscila:'oscila sin decidirse'};
+const PRED_TIPOS=['estab','crece','oscila'];
+function predecir(tipo,btn){
+  S.labPred[labActual]=tipo;
+  guardar();
+  pintarPred();
+  labDibujar();
+}
+function pintarPred(){
+  const pred=S.labPred?S.labPred[labActual]:null;
+  const chips=document.querySelectorAll('#predBox .pred-chips .chip');
+  chips.forEach((c,i)=>{ c.classList.toggle('pred-elegida',pred===PRED_TIPOS[i]); });
+  const v=document.getElementById('predVeredicto');
+  if(!v) return;
+  if(!pred){ v.style.display='none'; return; }
+  const ok=PRED_OK[labActual]===pred;
+  v.style.display='block';
+  v.style.color=ok?'var(--green)':'var(--rust)';
+  v.textContent=ok
+    ?'✓ Tu predicción coincide con lo que muestra el gráfico. Ahora leé el diagnóstico de abajo.'
+    :'✗ Predijiste que '+PRED_LBL[pred]+', pero el gráfico muestra que '+PRED_LBL[PRED_OK[labActual]]+'. Equivocarse acá es valioso: leé el diagnóstico y buscá dónde falló la intuición.';
+}
+function labDibujar(){
+  const N=parseInt(document.getElementById('labN').value,10);
+  document.getElementById('labNval').textContent=N;
+  const cfg=SERIES_LAB[labActual];
+
+  // datos (se calculan siempre, aunque no haya canvas)
+  const A=[],SS=[]; let acc=0;
+  for(let n=1;n<=N;n++){ const a=cfg.a(n); acc+=a; A.push(a); SS.push(cfg.Sf?cfg.Sf(n):acc); }
+
+  const cv=document.getElementById('canvasLab');
+  const ctx=(cv&&cv.getContext)?cv.getContext('2d'):null;
+  if(ctx){
+  // nitidez en pantallas de alta densidad
+  const cssW=cv.clientWidth||860, cssH=cssW*0.44;
+  const dpr=window.devicePixelRatio||1;
+  cv.width=cssW*dpr; cv.height=cssH*dpr; cv.style.height=cssH+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+
+  let yMin=Math.min(0,...A,...SS), yMax=Math.max(1,...A,...SS,(cfg.lim||0));
+  const pad=(yMax-yMin)*0.15+0.1; yMin-=pad; yMax+=pad;
+
+  const mL=44,mR=14,mT=12,mB=28;
+  const X=n=>mL+(n-1)/(Math.max(N-1,1))*(cssW-mL-mR);
+  const Y=v=>mT+(yMax-v)/(yMax-yMin)*(cssH-mT-mB);
+
+  // ejes y grilla
+  ctx.strokeStyle='#E4DECF'; ctx.lineWidth=1; ctx.font='11px Hanken Grotesk'; ctx.fillStyle='#5C5A52';
+  const paso=(yMax-yMin)>8?2:(yMax-yMin)>4?1:0.5;
+  for(let v=Math.ceil(yMin/paso)*paso; v<=yMax; v+=paso){
+    ctx.beginPath(); ctx.moveTo(mL,Y(v)); ctx.lineTo(cssW-mR,Y(v)); ctx.stroke();
+    ctx.fillText((Math.round(v*100)/100).toString().replace('.',','),4,Y(v)+4);
+  }
+  ctx.strokeStyle='#B8B2A2';
+  ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(cssW-mR,Y(0)); ctx.stroke();
+
+  // línea del límite
+  if(cfg.lim!=null){
+    ctx.strokeStyle='#C77A40'; ctx.setLineDash([6,5]); ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(mL,Y(cfg.lim)); ctx.lineTo(cssW-mR,Y(cfg.lim)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#C77A40'; ctx.fillText('límite de Sₙ = '+cfg.lim, cssW-mR-110, Y(cfg.lim)-6);
+  }
+  // segmentos guía de Sₙ
+  ctx.strokeStyle='rgba(69,120,90,.35)'; ctx.lineWidth=1.5; ctx.beginPath();
+  SS.forEach((v,i)=>{ const x=X(i+1),y=Y(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }); ctx.stroke();
+  // puntos aₙ (azul) y Sₙ (verde)
+  A.forEach((v,i)=>{ ctx.fillStyle='#2B5A93'; ctx.beginPath(); ctx.arc(X(i+1),Y(v),4,0,7); ctx.fill(); });
+  SS.forEach((v,i)=>{ ctx.fillStyle='#45785A'; ctx.beginPath(); ctx.arc(X(i+1),Y(v),4.5,0,7); ctx.fill(); });
+  // etiqueta eje n
+  ctx.fillStyle='#5C5A52'; ctx.fillText('n = 1',mL-4,cssH-8); ctx.fillText('n = '+N,cssW-mR-40,cssH-8);
+  } // fin if(ctx)
+
+  // diagnóstico textual: bloqueado hasta que haya predicción para esta serie
+  const d=document.getElementById('labDiag');
+  if(S.labPred&&S.labPred[labActual]){ d.innerHTML=cfg.diag; }
+  else{ d.innerHTML='🔒 Primero elegí tu <strong>predicción</strong> arriba del gráfico: el diagnóstico de esta serie se desbloquea después de que arriesgues una hipótesis.'; }
+  rmath(d);
+
+  // tabla
+  const t=document.getElementById('labTabla');
+  const idx=[]; const tope=Math.min(N,5);
+  for(let n=1;n<=tope;n++) idx.push(n);
+  if(N>5) idx.push(N);
+  t.innerHTML='<tr><th>n</th><th>aₙ (término)</th><th>Sₙ (acumulado)</th></tr>'+
+    idx.map(n=>{
+      const aTxt=cfg.aTxt?cfg.aTxt(n):red(cfg.a(n));
+      const sVal=cfg.Sf?cfg.Sf(n):A.slice(0,n).reduce((s,x)=>s+x,0);
+      const sTxt=cfg.sTxt?cfg.sTxt(n):red(sVal);
+      const sDec=(cfg.Sf?cfg.Sf(n):sVal);
+      return `<tr><td>${n}</td><td>${aTxt}</td><td>${sTxt}${(labActual!=='cte'&&labActual!=='alt')?' ≈ '+red(sDec):''}</td></tr>`;
+    }).join('');
+}
+function red(v){ return (Math.round(v*1000)/1000).toString().replace('.',','); }
+window.addEventListener('resize',()=>{ if(document.getElementById('canvasLab')) labDibujar(); if(document.getElementById('canvasGeo')) dibujarGeo(); });
+
+/* ============================================================
+   MINI-LABORATORIO GEOMÉTRICO (a=1, razón variable)
+   ============================================================ */
+const GEO_LAB={
+  r12:{r:0.5, a:n=>Math.pow(0.5,n-1), Sf:n=>2*(1-Math.pow(0.5,n)), lim:2,
+    diag:'Con \\(r=\\tfrac12\\): \\(|r|<1\\), así que \\(r^n\\to0\\) y \\(S_n\\to\\frac{1}{1-\\tfrac12}=2\\). <strong>Converge</strong> y la suma es exactamente 2.'},
+  r23:{r:2/3, a:n=>Math.pow(2/3,n-1), Sf:n=>3*(1-Math.pow(2/3,n)), lim:3,
+    diag:'Con \\(r=\\tfrac23\\): también \\(|r|<1\\), pero más cerca de 1 que \\(\\tfrac12\\), así que la serie converge <em>más lento</em> (compará cuánto tarda en pegarse a la línea). Suma: \\(\\frac{1}{1-\\tfrac23}=3\\). <strong>Converge</strong>.'},
+  r1:{r:1, a:n=>1, Sf:n=>n, lim:null,
+    diag:'Con \\(r=1\\) la fórmula no aplica (dividiría por 0), pero no hace falta: todos los términos valen 1 y \\(S_n=n\\), la escalera hacia \\(+\\infty\\). <strong>Diverge</strong>.'},
+  rm1:{r:-1, a:n=>Math.pow(-1,n-1), Sf:n=>(n%2===1?1:0), lim:null,
+    diag:'Con \\(r=-1\\): \\(r^n\\) salta entre \\(-1\\) y \\(1\\), y \\(S_n\\) queda oscilando \\(1,0,1,0,\\dots\\) sin límite. <strong>Diverge por oscilación</strong>. Ojo: la fórmula \\(\\frac{a}{1-r}\\) daría \\(\\tfrac12\\), pero con \\(|r|\\geq1\\) esa fórmula <em>no vale</em>.'},
+  r32:{r:1.5, a:n=>Math.pow(1.5,n-1), Sf:n=>2*(Math.pow(1.5,n)-1), lim:null,
+    diag:'Con \\(r=\\tfrac32\\): \\(|r|>1\\), los términos <em>crecen</em> en vez de achicarse (\\(a_n\\) ni siquiera tiende a 0) y \\(S_n\\) <strong>explota</strong>. Diverge — y rapidísimo: mové el deslizador y mirá la escala del eje.'}
+};
+let geoActual='r12';
+const PRED_OK_GEO={r12:'estab',r23:'estab',r1:'crece',rm1:'oscila',r32:'crece'};
+function geoSerie(k,btn){
+  geoActual=k;
+  document.querySelectorAll('.lab-controles .chip[data-geo]').forEach(c=>c.classList.remove('activo'));
+  btn.classList.add('activo');
+  pintarPredGeo();
+  dibujarGeo();
+}
+function predecirGeo(tipo,btn){
+  S.geoPred[geoActual]=tipo;
+  guardar();
+  pintarPredGeo();
+  dibujarGeo();
+}
+function pintarPredGeo(){
+  const pred=S.geoPred?S.geoPred[geoActual]:null;
+  const chips=document.querySelectorAll('#predBoxGeo .pred-chips .chip');
+  chips.forEach((c,i)=>{ c.classList.toggle('pred-elegida',pred===PRED_TIPOS[i]); });
+  const v=document.getElementById('predVeredictoGeo');
+  if(!v) return;
+  if(!pred){ v.style.display='none'; return; }
+  const ok=PRED_OK_GEO[geoActual]===pred;
+  v.style.display='block';
+  v.style.color=ok?'var(--green)':'var(--rust)';
+  v.textContent=ok
+    ?'✓ Tu predicción coincide con lo que muestra el gráfico. Ahora leé el diagnóstico de abajo.'
+    :'✗ Predijiste que '+PRED_LBL[pred]+', pero el gráfico muestra que '+PRED_LBL[PRED_OK_GEO[geoActual]]+'. Equivocarse acá es valioso: leé el diagnóstico y fijate qué hace r^n.';
+}
+function dibujarGeo(){
+  const inp=document.getElementById('geoN'); if(!inp) return;
+  const N=parseInt(inp.value,10);
+  document.getElementById('geoNval').textContent=N;
+  const cfg=GEO_LAB[geoActual];
+
+  const A=[],SS=[];
+  for(let n=1;n<=N;n++){ A.push(cfg.a(n)); SS.push(cfg.Sf(n)); }
+
+  const cv=document.getElementById('canvasGeo');
+  const ctx=(cv&&cv.getContext)?cv.getContext('2d'):null;
+  if(ctx){
+  const cssW=cv.clientWidth||860, cssH=cssW*0.44;
+  const dpr=window.devicePixelRatio||1;
+  cv.width=cssW*dpr; cv.height=cssH*dpr; cv.style.height=cssH+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+
+  let yMin=Math.min(0,...A,...SS), yMax=Math.max(1,...A,...SS,(cfg.lim||0));
+  const pad=(yMax-yMin)*0.15+0.1; yMin-=pad; yMax+=pad;
+  const mL=44,mR=14,mT=12,mB=28;
+  const X=n=>mL+(n-1)/(Math.max(N-1,1))*(cssW-mL-mR);
+  const Y=v=>mT+(yMax-v)/(yMax-yMin)*(cssH-mT-mB);
+
+  ctx.strokeStyle='#E4DECF'; ctx.lineWidth=1; ctx.font='11px Hanken Grotesk'; ctx.fillStyle='#5C5A52';
+  const rango=yMax-yMin;
+  const paso=rango>200?50:rango>80?20:rango>30?10:rango>12?4:rango>8?2:rango>4?1:0.5;
+  for(let v=Math.ceil(yMin/paso)*paso; v<=yMax; v+=paso){
+    ctx.beginPath(); ctx.moveTo(mL,Y(v)); ctx.lineTo(cssW-mR,Y(v)); ctx.stroke();
+    ctx.fillText((Math.round(v*100)/100).toString().replace('.',','),4,Y(v)+4);
+  }
+  ctx.strokeStyle='#B8B2A2';
+  ctx.beginPath(); ctx.moveTo(mL,Y(0)); ctx.lineTo(cssW-mR,Y(0)); ctx.stroke();
+
+  if(cfg.lim!=null){
+    ctx.strokeStyle='#C77A40'; ctx.setLineDash([6,5]); ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(mL,Y(cfg.lim)); ctx.lineTo(cssW-mR,Y(cfg.lim)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#C77A40'; ctx.fillText('suma de la serie = '+cfg.lim, cssW-mR-130, Y(cfg.lim)-6);
+  }
+  ctx.strokeStyle='rgba(69,120,90,.35)'; ctx.lineWidth=1.5; ctx.beginPath();
+  SS.forEach((v,i)=>{ const x=X(i+1),y=Y(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }); ctx.stroke();
+  A.forEach((v,i)=>{ ctx.fillStyle='#2B5A93'; ctx.beginPath(); ctx.arc(X(i+1),Y(v),4,0,7); ctx.fill(); });
+  SS.forEach((v,i)=>{ ctx.fillStyle='#45785A'; ctx.beginPath(); ctx.arc(X(i+1),Y(v),4.5,0,7); ctx.fill(); });
+  ctx.fillStyle='#5C5A52'; ctx.fillText('n = 1',mL-4,cssH-8); ctx.fillText('n = '+N,cssW-mR-40,cssH-8);
+  } // fin if(ctx)
+
+  const d=document.getElementById('geoDiag');
+  if(S.geoPred&&S.geoPred[geoActual]){ d.innerHTML=cfg.diag; }
+  else{ d.innerHTML='🔒 Primero elegí tu <strong>predicción</strong> arriba del gráfico: el diagnóstico de esta razón se desbloquea después de que arriesgues una hipótesis.'; }
+  rmath(d);
+}
+
+/* ============================================================
+   PRÁCTICA ADAPTATIVA — datos de ejercicios
+   ============================================================ */
+const NIVELES_INFO={
+  1:{nom:'Reconocimiento',desc:'Identificar qué objeto es cada cosa: sucesión, suma parcial o serie.'},
+  2:{nom:'Aplicación directa',desc:'Calcular términos y sumas parciales concretas.'},
+  3:{nom:'Resolución guiada',desc:'Usar el procedimiento de 4 pasos con pistas escalonadas.'},
+  4:{nom:'Análisis',desc:'Evaluar razonamientos, justificar y detectar conclusiones inválidas.'},
+  5:{nom:'Desafío',desc:'Ejercicios integradores con decisión de estrategia.'}
+};
+const EJ=[
+ /* ---------- NIVEL 1 ---------- */
+ {id:'e11',nivel:1,tipo:'Reconocimiento',
+  enun:'Observá el objeto \\(1,\\ \\tfrac12,\\ \\tfrac13,\\ \\tfrac14,\\ \\dots\\) ¿Qué es?',
+  ops:[
+   {t:'Una sucesión: una lista ordenada de términos.',ok:true,fb:'Correcto: números separados por comas, cada uno en su posición. Nadie está sumando nada todavía.'},
+   {t:'Una serie: la suma de infinitos términos.',mis:'M1',fb:'Buena intuición sobre lo infinito, pero fijate: no hay signos «+». Una serie suma; esto solo lista.'},
+   {t:'Una suma parcial.',mis:'M1',fb:'Una suma parcial es un único número (lo acumulado hasta \\(n\\)); acá hay una lista completa.'},
+   {t:'El límite de una serie.',fb:'Un límite es un solo valor; acá hay infinitos valores ordenados.'}],
+  pistas:['Pensá en la diferencia entre una <em>lista</em> y una <em>suma</em>.',
+   'Buscá el indicio tipográfico: ¿hay comas o hay signos +?',
+   'Primer paso: nombrá cada elemento. El primero es \\(a_1=1\\), el segundo \\(a_2=\\tfrac12\\)…',
+   'Error común: llamar «serie» a cualquier cosa con infinitos números. La serie necesita la intención de sumar.'],
+  sol:'Es la <strong>sucesión</strong> \\(a_n=\\tfrac1n\\): una lista ordenada. Si le pusiéramos signos + entre los términos, recién ahí estaríamos frente a la serie \\(\\sum_{n=1}^{\\infty}\\tfrac1n\\).',
+  rem:{enun:'Caso más simple: ¿cuál de estos objetos es una <em>lista</em> de números separados por comas?',
+   ops:[{t:'\\(2,\\ 4,\\ 6,\\ 8,\\ \\dots\\)',ok:true,fb:'Eso: comas = lista = sucesión.'},
+        {t:'\\(2+4+6+8+\\cdots\\)',fb:'Los signos + indican suma: eso ya es una serie.'}],
+   sol:'La lista con comas es la sucesión; la misma lista con signos + pasa a ser la serie.'}},
+ {id:'e12',nivel:1,tipo:'Reconocimiento',
+  enun:'¿Qué representa exactamente \\(S_4\\)?',
+  ops:[
+   {t:'\\(a_4\\), el cuarto término de la sucesión.',mis:'M1',fb:'La letra \\(S\\) avisa que hay una suma adentro. \\(a_4\\) es un solo término; \\(S_4\\) acumula cuatro.'},
+   {t:'\\(a_1+a_2+a_3+a_4\\)',ok:true,fb:'Correcto: la suma parcial acumula los primeros 4 términos de la sucesión.'},
+   {t:'\\(\\sum_{n=1}^{\\infty}a_n\\)',mis:'M3',fb:'Esa es la serie completa. \\(S_4\\) se corta en el cuarto término: es un proceso finito.'},
+   {t:'El límite \\(\\lim_{n\\to\\infty}a_n\\).',mis:'M5',fb:'El límite de los términos es otro objeto; \\(S_4\\) es un número concreto que se calcula sumando.'}],
+  pistas:['La letra elegida no es casual: \\(S\\) viene de «suma».',
+   'El subíndice 4 indica hasta dónde llega esa suma.',
+   'Primer paso: escribí \\(S_1\\), \\(S_2\\), \\(S_3\\) y buscá el patrón.',
+   'Error común: leer \\(S_4\\) como «el término 4». Los términos son los \\(a_n\\); los acumulados son los \\(S_n\\).'],
+  sol:'\\(S_4=a_1+a_2+a_3+a_4=\\sum_{k=1}^{4}a_k\\). Es el cuarto término de la <strong>sucesión de sumas parciales</strong>, no el cuarto término de la sucesión original.',
+  rem:{enun:'Caso más simple: ¿qué es \\(S_2\\)?',
+   ops:[{t:'\\(a_1+a_2\\)',ok:true,fb:'Bien: dos términos acumulados.'},
+        {t:'\\(a_2\\)',fb:'\\(a_2\\) es solo el segundo término; \\(S_2\\) también incluye al primero.'}],
+   sol:'\\(S_2=a_1+a_2\\): siempre desde el primer término hasta el que indica el subíndice.'}},
+
+ /* ---------- NIVEL 2 ---------- */
+ {id:'e21',nivel:2,tipo:'Aplicación directa',
+  enun:'Si \\(a_n=\\dfrac1{2^n}\\), calculá \\(a_3\\).',
+  ops:[
+   {t:'\\(\\tfrac18\\)',ok:true,fb:'Bien: \\(a_3=\\tfrac1{2^3}=\\tfrac18\\). Reemplazo directo en el término general.'},
+   {t:'\\(\\tfrac78\\)',mis:'M1',fb:'\\(\\tfrac78\\) es \\(S_3=\\tfrac12+\\tfrac14+\\tfrac18\\): calculaste el acumulado en lugar del término.'},
+   {t:'\\(\\tfrac16\\)',fb:'Cuidado con la cuenta: \\(2^3=8\\), no 6. El denominador se obtiene elevando, no multiplicando por 2.'},
+   {t:'\\(\\tfrac13\\)',fb:'Parece que usaste \\(a_n=\\tfrac1n\\). Acá el término general es \\(\\tfrac1{2^n}\\): mirá bien la fórmula.'}],
+  pistas:['«Calcular \\(a_3\\)» significa reemplazar \\(n=3\\) en la fórmula del término general.',
+   'Estrategia: primero resolvé \\(2^3\\), después invertí.',
+   'Primer paso: \\(2^3=2\\cdot2\\cdot2=8\\).',
+   'Error común: sumar los tres primeros términos. Eso daría \\(S_3\\), que es otro objeto.'],
+  sol:'\\(a_3=\\dfrac1{2^3}=\\dfrac18\\). Un solo término, sin sumar nada. (El acumulado \\(S_3=\\tfrac78\\) es la respuesta a otra pregunta.)',
+  rem:{enun:'Caso más simple: si \\(a_n=\\tfrac1n\\), ¿cuánto es \\(a_4\\)?',
+   ops:[{t:'\\(\\tfrac14\\)',ok:true,fb:'Bien: reemplazo directo.'},
+        {t:'\\(\\tfrac{25}{12}\\)',fb:'Ese valor es \\(S_4\\), el acumulado. \\(a_4\\) es un solo término.'}],
+   sol:'\\(a_4=\\tfrac14\\): se reemplaza \\(n=4\\) y listo.'}},
+ {id:'e22',nivel:2,tipo:'Aplicación directa',
+  enun:'Si \\(a_n=\\dfrac1n\\), calculá la suma parcial \\(S_3\\).',
+  ops:[
+   {t:'\\(\\tfrac13\\)',mis:'M1',fb:'\\(\\tfrac13\\) es el término \\(a_3\\). La suma parcial pide acumular: \\(a_1+a_2+a_3\\).'},
+   {t:'\\(\\tfrac{11}{6}\\)',ok:true,fb:'Correcto: \\(1+\\tfrac12+\\tfrac13=\\tfrac{6+3+2}{6}=\\tfrac{11}{6}\\).'},
+   {t:'\\(\\tfrac{25}{12}\\)',fb:'Ese es \\(S_4\\): sumaste un término de más. \\(S_3\\) llega hasta \\(a_3\\).'},
+   {t:'\\(\\tfrac6{11}\\)',fb:'Ojo con invertir la fracción al final: el común denominador es 6 y la suma de numeradores da 11.'}],
+  pistas:['\\(S_3\\) acumula los tres primeros términos: primero escribilos.',
+   'Estrategia: llevá todo a común denominador antes de sumar.',
+   'Primer paso: \\(a_1=1\\), \\(a_2=\\tfrac12\\), \\(a_3=\\tfrac13\\); el común denominador es 6.',
+   'Error común: responder \\(a_3\\) en lugar del acumulado. La \\(S\\) siempre significa suma.'],
+  sol:'\\(S_3=1+\\tfrac12+\\tfrac13=\\tfrac66+\\tfrac36+\\tfrac26=\\tfrac{11}{6}\\approx1{,}833\\). Un número concreto: las sumas parciales siempre se pueden terminar de calcular.',
+  rem:{enun:'Caso más simple: si \\(a_n=n\\), ¿cuánto es \\(S_3\\)?',
+   ops:[{t:'\\(6\\)',ok:true,fb:'Bien: \\(1+2+3=6\\).'},
+        {t:'\\(3\\)',fb:'\\(3\\) es \\(a_3\\); la suma parcial pide \\(1+2+3\\).'}],
+   sol:'\\(S_3=1+2+3=6\\). Término ≠ acumulado.'}},
+
+ /* ---------- NIVEL 3 ---------- */
+ {id:'e31',nivel:3,tipo:'Resolución guiada',
+  enun:'Una serie tiene sumas parciales \\(S_n=1-\\dfrac1{2^n}\\). Calculá \\(\\lim\\limits_{n\\to\\infty}S_n\\) y concluí.',
+  ops:[
+   {t:'El límite es 1: la serie converge y su suma es 1.',ok:true,fb:'Exacto: \\(\\tfrac1{2^n}\\to0\\) porque el denominador crece sin cota, y queda \\(S_n\\to1\\).'},
+   {t:'El límite es 0: la serie converge a 0.',mis:'M5',fb:'0 es el límite de los <em>términos</em> \\(a_n=\\tfrac1{2^n}\\). Acá te dieron directamente \\(S_n\\): su límite es otro.'},
+   {t:'El límite no existe.',fb:'Revisá: \\(1-\\tfrac1{2^n}\\) es \\(\\tfrac12,\\tfrac34,\\tfrac78,\\dots\\) — se acerca cada vez más a un valor fijo.'},
+   {t:'El límite es \\(+\\infty\\): diverge.',fb:'\\(S_n\\) nunca supera 1 (siempre le falta \\(\\tfrac1{2^n}\\) para llegar). No puede irse a infinito.'}],
+  pistas:['Te dieron la fórmula cerrada de \\(S_n\\): el Paso 2 ya está hecho. Solo falta el Paso 3.',
+   'Estrategia: analizá qué le pasa a \\(\\tfrac1{2^n}\\) cuando \\(n\\) crece.',
+   'Primer paso: \\(2^n\\) crece sin cota, entonces \\(\\tfrac1{2^n}\\to0\\).',
+   'Error común: responder con el límite de \\(a_n\\) en lugar del de \\(S_n\\). La conclusión sobre la serie siempre sale de \\(S_n\\).'],
+  sol:'\\(\\displaystyle\\lim_{n\\to\\infty}S_n=\\lim_{n\\to\\infty}\\left(1-\\frac1{2^n}\\right)=1-0=1\\). Como el límite es finito, la serie <strong>converge</strong> y \\(\\sum_{n=1}^{\\infty}\\tfrac1{2^n}=1\\).',
+  rem:{enun:'Caso más simple: ¿cuánto vale \\(\\lim\\limits_{n\\to\\infty}\\dfrac1{2^n}\\)?',
+   ops:[{t:'\\(0\\)',ok:true,fb:'Bien: el denominador crece sin cota, la fracción se achica hacia 0.'},
+        {t:'\\(1\\)',fb:'La fracción arranca en \\(\\tfrac12\\) y baja: \\(\\tfrac14,\\tfrac18,\\dots\\) — se va a 0.'}],
+   sol:'\\(\\tfrac1{2^n}\\to0\\); por eso \\(1-\\tfrac1{2^n}\\to1\\).'}},
+ {id:'e32',nivel:3,tipo:'Resolución guiada',
+  enun:'Calculá \\(\\displaystyle\\sum_{n=1}^{5}\\frac1{2^n}\\) (atención al tope de la sumatoria).',
+  ops:[
+   {t:'\\(1\\)',mis:'M3',fb:'\\(1\\) es el valor de la serie <em>infinita</em>. El tope acá es 5: te piden la suma parcial \\(S_5\\), que queda por debajo de 1.'},
+   {t:'\\(\\tfrac{31}{32}\\)',ok:true,fb:'Correcto: \\(\\tfrac{16+8+4+2+1}{32}=\\tfrac{31}{32}=0{,}96875\\). Cerquita de 1, pero no es 1.'},
+   {t:'\\(\\tfrac{15}{16}\\)',fb:'Ese es \\(S_4\\): te faltó sumar \\(\\tfrac1{32}\\). Contá bien hasta el término 5.'},
+   {t:'\\(\\tfrac1{32}\\)',mis:'M1',fb:'\\(\\tfrac1{32}\\) es solo \\(a_5\\), el quinto término. La sumatoria pide acumular los cinco.'}],
+  pistas:['Mirá el tope: dice 5, no \\(\\infty\\). Es un proceso finito.',
+   'Estrategia: llevá las cinco fracciones a denominador 32.',
+   'Primer paso: \\(\\tfrac12=\\tfrac{16}{32}\\), \\(\\tfrac14=\\tfrac8{32}\\), \\(\\tfrac18=\\tfrac4{32}\\)…',
+   'Error común: contestar el valor de la serie completa. Suma parcial y serie son objetos distintos aunque compartan notación.'],
+  sol:'\\(S_5=\\tfrac{16}{32}+\\tfrac8{32}+\\tfrac4{32}+\\tfrac2{32}+\\tfrac1{32}=\\tfrac{31}{32}=0{,}96875\\). En cambio \\(\\sum_{n=1}^{\\infty}\\tfrac1{2^n}=1\\): la primera es una <strong>suma parcial</strong>; la segunda, la <strong>serie completa</strong>.',
+  rem:{enun:'Caso más simple: \\(\\displaystyle\\sum_{n=1}^{2}\\frac1{2^n}=\\ ?\\)',
+   ops:[{t:'\\(\\tfrac34\\)',ok:true,fb:'Bien: \\(\\tfrac12+\\tfrac14=\\tfrac34\\).'},
+        {t:'\\(\\tfrac14\\)',fb:'Eso es solo \\(a_2\\); la sumatoria hasta 2 acumula los dos primeros términos.'}],
+   sol:'Tope 2 → sumo dos términos: \\(\\tfrac12+\\tfrac14=\\tfrac34\\).'}},
+
+ /* ---------- NIVEL 4 ---------- */
+ {id:'e41',nivel:4,tipo:'Análisis',
+  enun:'Un compañero razona: «Como \\(a_n=\\tfrac1n\\) cumple \\(\\lim a_n=0\\), la serie \\(\\sum_{n=1}^{\\infty}\\tfrac1n\\) converge». ¿El razonamiento es válido?',
+  ops:[
+   {t:'No: \\(a_n\\to0\\) es necesaria pero no suficiente. De hecho, la serie armónica diverge.',ok:true,fb:'Exacto. Las sumas parciales de la armónica crecen sin techo (\\(S_{100}\\approx5{,}19\\) y sigue subiendo): \\(S_n\\to+\\infty\\).'},
+   {t:'Sí: si los términos tienden a 0, la suma se estabiliza.',mis:'M2',fb:'Tu respuesta muestra una intuición razonable, pero el laboratorio la refuta: en la armónica los términos van a 0 y el acumulado explota igual.'},
+   {t:'No es válido, porque \\(\\lim a_n\\) en realidad no es 0.',fb:'El límite sí es 0: \\(\\tfrac1n\\to0\\). El problema del razonamiento está en otro lado: en qué se puede concluir a partir de eso.'},
+   {t:'Sí, porque el límite de \\(S_n\\) también es 0.',mis:'M5',fb:'Mezclaste los dos límites: \\(\\lim a_n=0\\), pero \\(\\lim S_n=+\\infty\\). Son objetos distintos con destinos distintos.'}],
+  pistas:['Repasá la tabla de decisión: ¿qué se puede concluir cuando \\(\\lim a_n=0\\)?',
+   'Estrategia: buscá un contraejemplo entre las series del laboratorio.',
+   'Primer paso: mirá los valores de \\(S_n\\) de la armónica: \\(1;\\ 1{,}5;\\ 1{,}83;\\ 2{,}08;\\dots\\) ¿se frenan?',
+   'Error común: usar la condición necesaria como si fuera suficiente. Solo sirve para descartar (si \\(a_n\\) no tiende a 0, diverge seguro).'],
+  sol:'El razonamiento es <strong>inválido</strong>. \\(\\lim a_n=0\\) solo deja la puerta abierta: la decisión requiere estudiar \\(\\lim S_n\\). Para la armónica, \\(S_n\\to+\\infty\\), así que \\(\\sum\\tfrac1n\\) <strong>diverge</strong> aunque sus términos tiendan a 0.',
+  rem:{enun:'Repaso de la tabla de decisión: si \\(\\lim a_n=0\\), ¿qué podés concluir sobre la serie?',
+   ops:[{t:'Nada todavía: puede converger o divergir.',ok:true,fb:'Eso: hay que seguir analizando con \\(S_n\\).'},
+        {t:'Que converge.',fb:'La armónica es el contraejemplo: términos a 0, serie divergente.'}],
+   sol:'\\(\\lim a_n=0\\) es solo un requisito de entrada; la decisión la toma \\(\\lim S_n\\).'}},
+ {id:'e42',nivel:4,tipo:'Análisis',
+  enun:'Analizá \\(\\displaystyle\\sum_{n=1}^{\\infty}(-1)^{n+1}=1-1+1-1+\\cdots\\) Sus sumas parciales son \\(1,0,1,0,\\dots\\) ¿Qué concluís?',
+  ops:[
+   {t:'Diverge: \\(\\lim S_n\\) no existe porque los acumulados oscilan sin estabilizarse.',ok:true,fb:'Correcto: es la divergencia por oscilación. Además falla la condición necesaria: \\(\\lim a_n\\) no existe (y en particular no es 0).'},
+   {t:'Converge a \\(\\tfrac12\\), el promedio entre 1 y 0.',mis:'M4',fb:'Idea atractiva (y con historia), pero la definición es estricta: converge solo si \\(S_n\\) se acerca a <em>un único</em> número, y acá salta entre dos.'},
+   {t:'Converge a 0, porque los términos se cancelan de a pares.',mis:'M4',fb:'La cancelación de a pares describe algunos \\(S_n\\) (los pares valen 0), pero los impares valen 1: no hay un único destino.'},
+   {t:'Converge porque los términos están acotados entre −1 y 1.',fb:'Estar acotado no alcanza: la convergencia exige que \\(S_n\\) tenga límite, y \\(1,0,1,0,\\dots\\) no lo tiene.'}],
+  pistas:['La pregunta de fondo: ¿la lista \\(1,0,1,0,\\dots\\) se acerca a un único número?',
+   'Estrategia: aplicá la definición literal de convergencia (\\(\\lim S_n=L\\) finito) sin agregarle interpretaciones.',
+   'Primer paso: escribí \\(S_1=1\\), \\(S_2=0\\), \\(S_3=1\\), \\(S_4=0\\)… y observá el patrón.',
+   'Error común: creer que divergir es únicamente «irse a infinito». Oscilar sin límite también es divergir.'],
+  sol:'\\(S_n\\) alterna entre 1 y 0, así que \\(\\lim S_n\\) <strong>no existe</strong>: la serie <strong>diverge por oscilación</strong>. Es la tercera forma de divergir, sin irse a \\(\\pm\\infty\\).',
+  rem:{enun:'Caso más simple: ¿la sucesión \\(1,0,1,0,1,0,\\dots\\) tiene límite?',
+   ops:[{t:'No: no se acerca a un único número.',ok:true,fb:'Eso: para tener límite, todos los términos avanzados deben concentrarse alrededor de un solo valor.'},
+        {t:'Sí, el límite es \\(\\tfrac12\\).',fb:'Ningún término vale \\(\\tfrac12\\) ni se acerca a él: la lista salta entre 1 y 0 para siempre.'}],
+   sol:'No tiene límite; por eso la serie asociada diverge.'}},
+
+ /* ---------- NIVEL 5 ---------- */
+ {id:'e51',nivel:5,tipo:'Desafío',
+  enun:'Una serie tiene sumas parciales \\(S_n=\\dfrac{2n}{n+1}\\). Decidí si converge y, si converge, cuánto vale.',
+  ops:[
+   {t:'Converge y su suma es 2, porque \\(\\lim S_n=2\\).',ok:true,fb:'Excelente: dividiendo numerador y denominador por \\(n\\): \\(\\tfrac{2}{1+\\frac1n}\\to\\tfrac21=2\\).'},
+   {t:'Diverge, porque \\(S_n\\) crece siempre.',fb:'Crece, sí, pero de forma <em>acotada</em>: \\(1;\\ \\tfrac43;\\ \\tfrac32;\\ \\tfrac85;\\dots\\) se frena contra 2. Crecer no implica explotar.'},
+   {t:'Converge a 1, el valor de \\(S_1\\).',fb:'\\(S_1\\) es solo el primer acumulado; el límite mira el comportamiento cuando \\(n\\) es enorme, no el arranque.'},
+   {t:'Diverge a \\(+\\infty\\), porque hay una \\(n\\) en el numerador.',fb:'También hay una \\(n\\) en el denominador: grados iguales → el cociente tiende al cociente de coeficientes, \\(\\tfrac21=2\\).'}],
+  pistas:['Todo el problema se reduce a un límite de cociente de polinomios de igual grado.',
+   'Estrategia: dividí numerador y denominador por \\(n\\).',
+   'Primer paso: \\(S_n=\\dfrac{2}{1+\\frac1n}\\), y \\(\\tfrac1n\\to0\\).',
+   'Error común: ver una \\(n\\) en el numerador y declarar divergencia sin mirar el denominador.'],
+  sol:'\\(\\displaystyle\\lim_{n\\to\\infty}\\frac{2n}{n+1}=\\lim_{n\\to\\infty}\\frac{2}{1+\\frac1n}=2\\). Límite finito → la serie <strong>converge</strong> y \\(\\sum_{n=1}^{\\infty}a_n=2\\).',
+  rem:{enun:'Paso guiado: ¿cuánto vale \\(\\lim\\limits_{n\\to\\infty}\\dfrac{2n}{n+1}\\)? (Dividí arriba y abajo por \\(n\\).)',
+   ops:[{t:'\\(2\\)',ok:true,fb:'Bien: queda \\(\\tfrac2{1+\\frac1n}\\to2\\).'},
+        {t:'\\(+\\infty\\)',fb:'El denominador también crece: los grados se compensan y el cociente se estabiliza en 2.'}],
+   sol:'\\(\\tfrac{2n}{n+1}=\\tfrac2{1+\\frac1n}\\to2\\); con eso podés concluir sobre la serie.'}},
+ {id:'e52',nivel:5,tipo:'Desafío integrador',
+  enun:'De las siguientes afirmaciones, elegí la <strong>única correcta</strong>.',
+  ops:[
+   {t:'Si \\(a_n\\) no tiende a 0, la serie \\(\\sum a_n\\) diverge con seguridad.',ok:true,fb:'Correcto: es el test de divergencia, y «no tender a 0» cubre dos casos: que el límite exista y sea distinto de 0 (como \\(a_n=1\\)) o que directamente no exista (como \\(a_n=(-1)^{n+1}\\)). En ambos, el acumulado no puede estabilizarse.'},
+   {t:'Si \\(\\lim a_n=0\\), la serie converge con seguridad.',mis:'M2',fb:'Es la recíproca de la afirmación verdadera, y es falsa: la serie armónica lo refuta.'},
+   {t:'Una serie es la suma de los primeros \\(n\\) términos de una sucesión.',mis:'M3',fb:'Eso define la <em>suma parcial</em> \\(S_n\\). La serie es la suma infinita asociada a la sucesión.'},
+   {t:'\\(\\lim a_n\\) y \\(\\lim S_n\\) siempre coinciden.',mis:'M5',fb:'Casi nunca coinciden: en \\(\\sum\\tfrac1{2^n}\\), \\(\\lim a_n=0\\) pero \\(\\lim S_n=1\\).'}],
+  pistas:['Tres de las cuatro afirmaciones son los errores clásicos del tema, apenas disfrazados.',
+   'Estrategia: para cada afirmación, buscá un contraejemplo entre las series del laboratorio.',
+   'Primer paso: probá la afirmación sobre \\(\\lim a_n=0\\) con la armónica.',
+   'Error común: aceptar recíprocas sin verificarlas. Que «converge → \\(a_n\\to0\\)» sea verdadera no vuelve verdadera a «\\(a_n\\to0\\) → converge».'],
+  sol:'La única correcta es la primera: si \\(a_n\\) no tiende a 0 (límite distinto de 0 o inexistente), la serie diverge seguro. Las otras tres son, respectivamente, la recíproca falsa de la condición necesaria (armónica), la confusión suma parcial/serie, y la confusión entre los dos límites.',
+  rem:{enun:'Repaso: ¿cuál de estos casos permite concluir <em>sin más análisis</em>?',
+   ops:[{t:'\\(\\lim a_n=3\\): la serie diverge seguro.',ok:true,fb:'Bien: términos que no van a 0 → divergencia garantizada.'},
+        {t:'\\(\\lim a_n=0\\): la serie converge seguro.',fb:'Ese caso queda abierto: puede pasar cualquiera de las dos cosas.'}],
+   sol:'\\(\\lim a_n\\neq0\\) cierra el problema (diverge); \\(\\lim a_n=0\\) lo deja abierto.'}},
+ {id:'e53',nivel:5,tipo:'Corrección de errores',
+  enun:'Un estudiante estudia \\(\\displaystyle\\sum_{n=1}^{\\infty}\\frac1n\\) así:<br><strong>Paso 1:</strong> identifico \\(a_n=\\tfrac1n\\). <strong>Paso 2:</strong> calculo \\(\\lim a_n=0\\). <strong>Paso 3:</strong> como el límite dio 0, la serie converge. <strong>Paso 4:</strong> por lo tanto, \\(\\sum\\tfrac1n=0\\).<br>¿En qué paso aparece el <strong>primer</strong> error?',
+  ops:[
+   {t:'Paso 3: usa \\(a_n\\to0\\) como si garantizara convergencia, y no la garantiza.',ok:true,fb:'Exacto: los pasos 1 y 2 son cálculos correctos; el 3 aplica la condición necesaria como si fuera suficiente. (El paso 4 encadena otro error, pero llega después.)'},
+   {t:'Paso 1: el término general está mal identificado.',fb:'El paso 1 está perfecto: la sucesión asociada a la serie es \\(a_n=\\tfrac1n\\).'},
+   {t:'Paso 2: ese límite no da 0.',fb:'El cálculo es correcto: \\(\\tfrac1n\\to0\\). El problema no está en la cuenta sino en la conclusión que se saca de ella.'},
+   {t:'Paso 4: recién ahí aparece el primer error.',mis:'M2',fb:'El paso 4 también está mal (trata \\(\\lim a_n\\) como si fuera la suma), pero el razonamiento ya se había roto antes: en el paso 3 se concluyó convergencia solo con \\(a_n\\to0\\).'}],
+  pistas:['Revisá cada paso en orden y preguntate dos cosas: ¿la cuenta está bien? ¿y la conclusión que se saca de esa cuenta?',
+   'Estrategia: los pasos 1 y 2 son cálculos; los pasos 3 y 4 son inferencias. Los errores conceptuales viven en las inferencias.',
+   'Primer paso: verificá el paso 2. \\(\\lim\\tfrac1n=0\\) es correcto; seguí al paso 3.',
+   'Error común: señalar el paso 4 porque es el más escandaloso. Se pide el <em>primer</em> error, no el más grave.'],
+  sol:'El primer error está en el <strong>Paso 3</strong>: de \\(\\lim a_n=0\\) no se puede concluir convergencia — la armónica es justamente el contraejemplo. El Paso 4 agrega un segundo error al confundir \\(\\lim a_n\\) con la suma de la serie. Corrección: con \\(a_n\\to0\\) el problema sigue abierto; hay que analizar \\(\\lim S_n\\), y para la armónica \\(S_n\\to+\\infty\\): <strong>diverge</strong>.',
+  rem:{enun:'Repaso: si \\(\\lim a_n=0\\), ¿la serie converge?',
+   ops:[{t:'No necesariamente: hay que estudiar \\(\\lim S_n\\).',ok:true,fb:'Eso: la condición es necesaria, no suficiente.'},
+        {t:'Sí, siempre.',fb:'La armónica lo refuta: términos que van a 0 y serie divergente.'}],
+   sol:'\\(a_n\\to0\\) deja el problema abierto; lo decide \\(\\lim S_n\\).'}}
+];
+
+/* ============================================================
+   EJERCICIOS DE SERIE GEOMÉTRICA (bloque propio)
+   ============================================================ */
+const GEJ=[
+ {id:'g1',nivel:'geo',tipo:'Del formato expandido al formato \\(\\sum\\)',
+  enun:'La serie \\(6+3+\\tfrac32+\\tfrac34+\\cdots\\) es geométrica. ¿Cuál es su escritura correcta en notación \\(\\sum\\)?',
+  ops:[
+   {t:'\\(\\displaystyle\\sum_{n=1}^{\\infty}6\\cdot\\left(\\tfrac12\\right)^{n-1}\\)',ok:true,fb:'Perfecto: \\(a=6\\), \\(r=\\tfrac36=\\tfrac12\\), y el control por evaluación cierra: con \\(n=1\\) da \\(6\\cdot(\\tfrac12)^0=6\\), con \\(n=2\\) da \\(3\\). ✓'},
+   {t:'\\(\\displaystyle\\sum_{n=1}^{\\infty}6\\cdot2^{n-1}\\)',fb:'Razón invertida: \\(r\\) es siguiente sobre anterior, \\(\\tfrac36=\\tfrac12\\), no \\(\\tfrac63=2\\). Esa serie es otra, y crece: \\(6+12+24+\\cdots\\)'},
+   {t:'\\(\\displaystyle\\sum_{n=1}^{\\infty}3\\cdot\\left(\\tfrac12\\right)^{n-1}\\)',fb:'Evaluá \\(n=1\\): da 3. Pero la serie arranca en 6: el primer término es el que abre la suma.'},
+   {t:'\\(\\displaystyle\\sum_{n=1}^{\\infty}6\\cdot\\left(\\tfrac12\\right)^{n}\\)',fb:'Evaluá \\(n=1\\): da \\(6\\cdot\\tfrac12=3\\), no 6. Con exponente \\(n\\) (sin el \\(-1\\)) el arranque queda corrido un lugar. (Esta escritura sería correcta arrancando el índice en \\(n=0\\).)'}],
+  pistas:['La escritura \\(\\sum\\) tiene que reproducir la serie término a término. El control infalible: evaluar el índice inicial y comparar con el primer término.',
+   'Estrategia: leé \\(a\\) (el término que abre) y \\(r\\) (cociente entre consecutivos), armá \\(a\\cdot r^{\\,n-1}\\), y verificá evaluando \\(n=1\\) y \\(n=2\\).',
+   'Primer paso: \\(a=6\\) y \\(r=\\tfrac36=\\tfrac12\\). Ahora evaluá \\(n=1\\) en cada opción: solo una da 6.',
+   'Error común: confundir \\(r^{\\,n}\\) con \\(r^{\\,n-1}\\). No es un detalle cosmético: corre toda la serie un lugar y cambia el primer término.'],
+  sol:'De la forma expandida: \\(a=6\\) y \\(r=\\tfrac36=\\tfrac12\\) (control: \\(\\tfrac{3/2}{3}=\\tfrac12\\) ✓). El formato general \\(\\sum_{n=1}^{\\infty}a\\cdot r^{\\,n-1}\\) da \\(\\displaystyle\\sum_{n=1}^{\\infty}6\\cdot\\left(\\tfrac12\\right)^{n-1}\\); verificación por evaluación: \\(n=1\\to6\\), \\(n=2\\to3\\), \\(n=3\\to\\tfrac32\\). ✓ La misma serie también se escribe \\(\\displaystyle\\sum_{n=0}^{\\infty}6\\cdot\\left(\\tfrac12\\right)^{n}\\): índice corrido, serie idéntica.',
+  rem:{enun:'Mini-caso: en \\(\\displaystyle\\sum_{n=1}^{\\infty}5\\cdot\\left(\\tfrac13\\right)^{n-1}\\), ¿cuál es el primer término?',
+   ops:[{t:'\\(5\\): evaluando \\(n=1\\) queda \\(5\\cdot\\left(\\tfrac13\\right)^0=5\\).',ok:true,fb:'Eso: el control es siempre evaluar el índice inicial.'},
+        {t:'\\(\\tfrac53\\).',fb:'Ese es el segundo término (\\(n=2\\)). Con \\(n=1\\) el exponente es 0 y queda \\(5\\).'}],
+   sol:'Primer término = evaluar el índice inicial: \\(n=1\\Rightarrow 5\\cdot(\\tfrac13)^0=5\\).'}},
+
+ {id:'g2',nivel:'geo',tipo:'Calcular con la fórmula de \\(S_n\\)',
+  enun:'Para la serie geométrica \\(\\displaystyle\\sum_{n=1}^{\\infty}\\left(\\tfrac13\\right)^{n-1}=1+\\tfrac13+\\tfrac19+\\cdots\\) (o sea \\(a=1\\), \\(r=\\tfrac13\\)), calculá la suma parcial \\(S_3\\) usando la fórmula \\(S_n=a\\cdot\\dfrac{1-r^n}{1-r}\\).',
+  ops:[
+   {t:'\\(S_3=\\tfrac{13}9\\).',ok:true,fb:'Bien: \\(\\frac{1-\\tfrac1{27}}{1-\\tfrac13}=\\frac{26/27}{2/3}=\\tfrac{13}9\\). Y el control a mano cierra: \\(1+\\tfrac13+\\tfrac19=\\tfrac{9+3+1}9=\\tfrac{13}9\\). ✓'},
+   {t:'\\(S_3=\\tfrac{26}{27}\\).',fb:'Te quedaste en el numerador: \\(1-r^3=\\tfrac{26}{27}\\). Falta dividir por \\(1-r=\\tfrac23\\).'},
+   {t:'\\(S_3=\\tfrac19\\).',mis:'M1',fb:'\\(\\tfrac19\\) es el término \\(a_3\\) solo. \\(S_3\\) pide <em>acumular</em> los tres primeros.'},
+   {t:'\\(S_3=\\tfrac32\\).',mis:'M3',fb:'\\(\\tfrac32=\\frac1{1-1/3}\\) es la suma de la serie <em>infinita</em> completa. \\(S_3\\) se corta en el tercer término y da menos.'}],
+  pistas:['\\(S_3\\) es una suma parcial: un número concreto. La fórmula te ahorra sumar a mano, pero tiene que dar lo mismo que sumar a mano.',
+   'Estrategia: calculá primero \\(r^3\\), después el numerador \\(1-r^3\\), después dividí por \\(1-r\\).',
+   'Primer paso: \\(r^3=\\left(\\tfrac13\\right)^3=\\tfrac1{27}\\), entonces el numerador es \\(1-\\tfrac1{27}=\\tfrac{26}{27}\\).',
+   'Error común: olvidarse del denominador \\(1-r\\), o confundir \\(S_3\\) con el término \\(a_3\\) o con la serie infinita.'],
+  sol:'\\(S_3=1\\cdot\\dfrac{1-(1/3)^3}{1-1/3}=\\dfrac{26/27}{2/3}=\\dfrac{26}{27}\\cdot\\dfrac32=\\dfrac{13}9\\). Verificación directa: \\(1+\\tfrac13+\\tfrac19=\\tfrac{13}9\\). Las dos rutas coinciden: eso es tener una fórmula demostrada.',
+  rem:{enun:'Mini-caso: con \\(a=1\\) y \\(r=\\tfrac13\\), ¿cuánto da \\(S_2\\) sumando a mano?',
+   ops:[{t:'\\(1+\\tfrac13=\\tfrac43\\).',ok:true,fb:'Eso: dos términos acumulados.'},
+        {t:'\\(\\tfrac13\\).',fb:'Ese es \\(a_2\\) solo: falta sumarle \\(a_1=1\\).'}],
+   sol:'\\(S_2=a_1+a_2=1+\\tfrac13=\\tfrac43\\).'}},
+
+ {id:'g3',nivel:'geo',tipo:'Decidir convergencia',
+  enun:'Una serie geométrica tiene razón \\(r=-0{,}8\\). Sin conocer el primer término, ¿qué podés afirmar?',
+  ops:[
+   {t:'Converge, porque \\(|r|=0{,}8<1\\).',ok:true,fb:'Eso: el criterio mira el <em>valor absoluto</em>. Los signos alternados no molestan: \\((-0{,}8)^n\\to0\\) igual, y \\(S_n\\) se estabiliza.'},
+   {t:'Diverge por oscilación, porque \\(r\\) es negativo.',mis:'M4',fb:'Los términos alternan signo, pero se achican tan rápido que \\(S_n\\) igual se estabiliza. La oscilación fatal es la de \\(r=-1\\), donde nada se achica.'},
+   {t:'Diverge, porque los términos negativos «arruinan» la suma.',fb:'Restar de a ratos no impide converger: lo que importa es si \\(r^n\\to0\\), y con \\(|r|<1\\) eso pasa, con signos o sin ellos.'},
+   {t:'No se puede saber sin conocer el primer término.',fb:'El primer término cambia el <em>valor</em> de la suma, pero no el veredicto: converger o no depende solo de \\(r\\) (siempre que \\(a\\neq0\\)).'}],
+  pistas:['Todo el destino de una geométrica está en un solo número: la razón. Repasá la tabla de los cuatro casos (bloque G3).',
+   'Estrategia: calculá \\(|r|\\) y comparalo con 1. Nada más.',
+   'Primer paso: \\(|-0{,}8|=0{,}8\\). ¿Es menor que 1?',
+   'Error común: creer que el signo negativo de \\(r\\) produce divergencia por oscilación. Solo \\(r=-1\\) (o \\(r&lt;-1\\)) diverge; con \\(-1&lt;r&lt;0\\) la serie converge oscilando cada vez menos.'],
+  sol:'Con \\(|r|=0{,}8<1\\), \\(r^n\\to0\\) y la serie <strong>converge</strong>, valga lo que valga el primer término. El signo negativo solo hace que \\(S_n\\) se acerque a su límite «zigzagueando», con saltos cada vez más chicos.',
+  rem:{enun:'Mini-caso: una geométrica con \\(r=\\tfrac12\\), ¿converge?',
+   ops:[{t:'Sí: \\(|r|<1\\).',ok:true,fb:'Correcto, es el caso más simple.'},
+        {t:'Depende del primer término.',fb:'El primer término no cambia el veredicto, solo el valor de la suma.'}],
+   sol:'El criterio es solo sobre \\(r\\): \\(|r|<1\\) → converge.'}},
+
+ {id:'g4',nivel:'geo',tipo:'Calcular la suma de la serie',
+  enun:'Calculá el valor exacto de la serie geométrica \\(\\displaystyle\\sum_{n=1}^{\\infty}6\\cdot\\left(\\tfrac13\\right)^{n-1}=6+2+\\tfrac23+\\tfrac29+\\cdots\\)',
+  ops:[
+   {t:'\\(9\\).',ok:true,fb:'Correcto: \\(a=6\\), \\(r=\\tfrac26=\\tfrac13\\), \\(|r|<1\\) ✓, y \\(\\dfrac{6}{1-\\tfrac13}=\\dfrac6{2/3}=9\\).'},
+   {t:'\\(4{,}5\\).',fb:'Salió de \\(\\frac6{1+\\tfrac13}\\): el denominador de la fórmula es \\(1-r\\), con signo <em>menos</em>.'},
+   {t:'\\(18\\).',fb:'Salió de dividir por \\(r=\\tfrac13\\) en vez de por \\(1-r=\\tfrac23\\). La fórmula es \\(\\frac{\\text{primer término}}{1-r}\\).'},
+   {t:'\\(6\\).',mis:'M1',fb:'Eso es solo el primer término. La serie acumula infinitos sumandos: cada vez más chicos, pero suman \\(2+\\tfrac23+\\cdots=3\\) más.'}],
+  pistas:['Antes de calcular nada: ¿es geométrica? ¿Cuánto valen \\(a\\) y \\(r\\)? ¿Cumple \\(|r|<1\\) para poder usar la fórmula?',
+   'Estrategia: primero \\(r=\\tfrac{2}{6}\\); segundo, verificá \\(|r|<1\\); tercero, aplicá \\(\\frac{\\text{primer término}}{1-r}\\).',
+   'Primer paso: \\(r=\\tfrac13\\) y \\(1-r=\\tfrac23\\). Ahora dividí \\(6\\div\\tfrac23\\).',
+   'Error común: dividir por \\(r\\) en lugar de \\(1-r\\), o cambiar el signo del denominador.'],
+  sol:'Es geométrica con \\(a=6\\) y \\(r=\\tfrac26=\\tfrac13\\) (control: \\(\\tfrac{2/3}{2}=\\tfrac13\\) ✓). Como \\(|r|<1\\), converge y \\(\\sum=\\dfrac{6}{1-\\tfrac13}=\\dfrac{6}{2/3}=9\\). Fijate lo fuerte del resultado: infinitos términos, valor exacto \\(9\\).',
+  rem:{enun:'Mini-caso: \\(\\tfrac12+\\tfrac14+\\tfrac18+\\cdots\\) — primer término \\(\\tfrac12\\), razón \\(\\tfrac12\\). ¿La suma?',
+   ops:[{t:'\\(\\dfrac{1/2}{1-1/2}=1\\).',ok:true,fb:'La caminata de Zenón, ahora por fórmula.'},
+        {t:'\\(\\tfrac12\\).',fb:'Ese es el primer término, no la suma acumulada infinita.'}],
+   sol:'\\(\\frac{\\text{primer término}}{1-r}=\\frac{1/2}{1/2}=1\\), como viste en la activación.'}},
+
+ {id:'g5',nivel:'geo',tipo:'El caso trampa',
+  enun:'¿Qué pasa con la serie \\(\\displaystyle\\sum_{n=1}^{\\infty}7\\cdot(-1)^{n-1}=7-7+7-7+7-\\cdots\\)?',
+  ops:[
+   {t:'Diverge: \\(S_n\\) oscila entre \\(7\\) y \\(0\\) y no tiene límite.',ok:true,fb:'Exacto: es geométrica con \\(r=-1\\), y \\(|r|=1\\) no es menor que 1. Las sumas parciales van \\(7,0,7,0,\\dots\\) para siempre: sin \\(\\lim S_n\\), no hay convergencia.'},
+   {t:'Converge a \\(0\\), porque los términos se van cancelando.',mis:'M4',fb:'Las cancelaciones no cierran el asunto: \\(S_n\\) nunca se queda quieta, salta entre 7 y 0 eternamente. Converger exige que \\(S_n\\) tenga límite, y acá no lo tiene.'},
+   {t:'Converge a \\(\\tfrac72\\), por la fórmula: \\(\\frac{a}{1-r}=\\frac{7}{1-(-1)}=\\tfrac72\\).',fb:'La cuenta da un número, pero la fórmula <em>solo vale si</em> \\(|r|<1\\). Con \\(r=-1\\) usarla es pisar fuera del mapa: el «resultado» no significa nada. Primero se controla \\(|r|\\), después se calcula.'},
+   {t:'Diverge a \\(+\\infty\\).',fb:'No se escapa a infinito: queda atrapada saltando entre 7 y 0. Diverge, sí, pero <em>por oscilación</em>: es el otro modo de divergir que viste en contraejemplos.'}],
+  pistas:['Identificá \\(a\\) y \\(r\\) primero. ¿Qué tipo de geométrica es esta?',
+   'Estrategia: con \\(r\\) en la mano, ubicala en la tabla de los cuatro casos del bloque G3 <em>antes</em> de tocar cualquier fórmula.',
+   'Primer paso: \\(r=\\tfrac{-7}{7}=-1\\). ¿En qué fila de la tabla cae \\(r=-1\\)?',
+   'Error común: aplicar la fórmula de la suma sin verificar \\(|r|<1\\). La fórmula tiene una condición de entrada, y este ejercicio existe para que no te la saltees nunca más.'],
+  sol:'Es geométrica con \\(a=7\\), \\(r=-1\\). Las sumas parciales oscilan: \\(S_1=7\\), \\(S_2=0\\), \\(S_3=7\\), \\(S_4=0,\\dots\\) — \\(\\lim S_n\\) no existe y la serie <strong>diverge por oscilación</strong>. La fórmula \\(\\frac{a}{1-r}\\) daría \\(\\tfrac72\\), pero está prohibida acá: exige \\(|r|<1\\). (Dato de color: ese \\(\\tfrac72\\) fantasma fascinó a matemáticos del siglo XVIII, pero no es la suma de la serie.)',
+  rem:{enun:'Mini-caso: en \\(1-1+1-1+\\cdots\\), ¿qué valores toma \\(S_n\\)?',
+   ops:[{t:'\\(1,0,1,0,\\dots\\): salta sin decidirse.',ok:true,fb:'Y sin límite de \\(S_n\\), no hay convergencia.'},
+        {t:'Se va acercando a \\(\\tfrac12\\).',fb:'Nunca se «acerca»: está siempre exactamente en 1 o en 0.'}],
+   sol:'\\(S_n\\) alterna entre 1 y 0 para siempre: no existe \\(\\lim S_n\\).'}},
+
+ {id:'g6',nivel:'geo',tipo:'Transferencia: decimales periódicos',
+  enun:'Escribí \\(0{,}777\\ldots\\) como serie geométrica y calculá su valor exacto como fracción.',
+  ops:[
+   {t:'\\(\\tfrac79\\).',ok:true,fb:'Bien: \\(0{,}777\\ldots=\\tfrac7{10}+\\tfrac7{100}+\\cdots\\), con \\(a=\\tfrac7{10}\\) y \\(r=\\tfrac1{10}\\). Entonces \\(\\frac{7/10}{1-1/10}=\\frac{7/10}{9/10}=\\tfrac79\\). Control: \\(7\\div9=0{,}777\\ldots\\) ✓'},
+   {t:'\\(\\tfrac7{10}\\).',mis:'M1',fb:'Ese es solo el primer término (\\(0{,}7\\)). El periódico sigue: \\(+\\tfrac7{100}+\\tfrac7{1000}+\\cdots\\), y todo eso también suma.'},
+   {t:'\\(\\tfrac{77}{100}\\).',mis:'M3',fb:'Eso es \\(0{,}77\\): la suma parcial \\(S_2\\). El decimal periódico tiene <em>infinitas</em> cifras: es la serie completa, no un corte.'},
+   {t:'\\(\\tfrac7{11}\\).',fb:'Salió de un denominador equivocado. El correcto es \\(1-r=1-\\tfrac1{10}=\\tfrac9{10}\\), que lleva al 9 del resultado.'}],
+  pistas:['Un decimal periódico esconde una suma infinita: cada cifra repetida es un término más chico que el anterior. Releé el bloque G4.',
+   'Estrategia: descomponé \\(0{,}777\\ldots\\) como \\(\\tfrac7{10}+\\tfrac7{100}+\\tfrac7{1000}+\\cdots\\) e identificá \\(a\\) y \\(r\\).',
+   'Primer paso: \\(a=\\tfrac7{10}\\) y \\(r=\\tfrac{7/100}{7/10}=\\tfrac1{10}\\). Verificá \\(|r|<1\\) y aplicá la fórmula.',
+   'Error común: quedarse con el primer término (\\(\\tfrac7{10}\\)) o con un corte finito (\\(\\tfrac{77}{100}\\)). El periódico es la serie <em>entera</em>.'],
+  sol:'\\(0{,}777\\ldots=\\tfrac7{10}+\\tfrac7{100}+\\tfrac7{1000}+\\cdots=\\displaystyle\\sum_{n=1}^{\\infty}\\frac{7}{10^n}\\): geométrica con \\(a=\\tfrac7{10}\\), \\(r=\\tfrac1{10}\\). Como \\(|r|<1\\): \\(\\sum=\\frac{7/10}{9/10}=\\dfrac79\\). Mismo mecanismo que \\(0{,}999\\ldots=1\\): el decimal periódico <em>es</em> el límite de sus sumas parciales.',
+  rem:{enun:'Mini-caso: \\(0{,}333\\ldots\\) como fracción, ¿cuánto es?',
+   ops:[{t:'\\(\\tfrac13\\): es \\(\\frac{3/10}{1-1/10}=\\frac{3/10}{9/10}\\).',ok:true,fb:'Y coincide con lo que ya sabías de \\(\\tfrac13\\).'},
+        {t:'\\(\\tfrac3{10}\\).',fb:'Ese es solo \\(0{,}3\\), el primer término.'}],
+   sol:'\\(0{,}333\\ldots=\\frac{3/10}{9/10}=\\tfrac13\\): el caso conocido que valida el método.'}}
+];
+function pintarGeo(){
+  const cont=document.getElementById('geoEjercicios');
+  if(!cont) return;
+  cont.innerHTML=GEJ.map(htmlEjercicio).join('');
+  GEJ.forEach(e=>{
+    const st=S.practica[e.id];
+    if(st&&st.resuelto){
+      const card=document.getElementById('ej_'+e.id);
+      card.querySelectorAll('.opciones.main button').forEach((b,k)=>{b.disabled=true;if(e.ops[k].ok)b.classList.add('correcta');});
+      const v=document.getElementById('v_'+e.id);
+      v.className='veredicto ok'; v.innerHTML='<strong>Resuelto.</strong> '+e.ops.find(o=>o.ok).fb;
+      document.getElementById('sol_'+e.id).classList.add('visible');
+      document.getElementById('mc_'+e.id).classList.add('visible');
+      if(st.primeraOk){ const b=document.getElementById('bd_'+e.id); if(b)b.style.display='inline-block'; }
+      if(st.metacog){ marcarMetacogUI(e.id,st.metacog); }
+    }
+  });
+  rmath(cont);
+}
+
+/* ---------- Ejercicios de producción (mecánicos): ids por nivel ---------- */
+function customsDeNivel(n){ return n===1?['c13']:(n===2?['c23']:[]); }
+function idsNivel(n){ return EJ.filter(e=>e.nivel===n).map(e=>e.id).concat(customsDeNivel(n)); }
+function totalNivel(n){ return idsNivel(n).length; }
+function todosLosIds(){ let t=[]; for(let n=1;n<=5;n++) t=t.concat(idsNivel(n)); return t; }
+
+/* ---------- render de práctica ---------- */
+function pintarTabs(){
+  const reco=nivelInicioReco();
+  const cont=document.getElementById('nivelesTabs');
+  cont.innerHTML=[1,2,3,4,5].map(n=>{
+    const hechos=idsNivel(n).filter(id=>S.practica[id]&&S.practica[id].resuelto).length;
+    const esReco=(S.diag.nivel!=null&&n===reco);
+    return `<button class="${S.nivelActivo===n?'activo':''}" onclick="S.nivelActivo=${n};guardar();pintarTabs();pintarEjercicios()">
+      Nivel ${n} · ${NIVELES_INFO[n].nom}
+      <span class="estado">${hechos}/${totalNivel(n)} resueltos${esReco?' · recomendado':''}</span>
+    </button>`;
+  }).join('');
+}
+function pintarEjercicios(){
+  const n=S.nivelActivo;
+  const cont=document.getElementById('ejerciciosCont');
+  const info=NIVELES_INFO[n];
+  const racha=S.racha[n]||0;
+  let html=`<div class="nota"><strong>Nivel ${n} — ${info.nom}.</strong> ${info.desc}</div>`;
+  if(racha>=2&&n<5){
+    html+=`<div class="nota green"><strong>Vas muy bien:</strong> dos aciertos a la primera seguidos. Podés saltar directamente al <a href="#" onclick="S.nivelActivo=${n+1};guardar();pintarTabs();pintarEjercicios();return false"><strong>Nivel ${n+1}</strong></a> si querés más desafío.</div>`;
+  }
+  EJ.filter(e=>e.nivel===n).forEach(e=>{ html+=htmlEjercicio(e); });
+  if(n===1) html+=htmlClasif();
+  if(n===2) html+=htmlInputS2();
+  cont.innerHTML=html;
+  if(n===1) restaurarClasif();
+  if(n===2) restaurarS2();
+  // restaurar estado de ejercicios ya resueltos
+  EJ.filter(e=>e.nivel===n).forEach(e=>{
+    const st=S.practica[e.id];
+    if(st&&st.resuelto){
+      const card=document.getElementById('ej_'+e.id);
+      card.querySelectorAll('.opciones.main button').forEach((b,k)=>{b.disabled=true;if(e.ops[k].ok)b.classList.add('correcta');});
+      const v=document.getElementById('v_'+e.id);
+      v.className='veredicto ok'; v.innerHTML='<strong>Resuelto.</strong> '+e.ops.find(o=>o.ok).fb;
+      document.getElementById('sol_'+e.id).classList.add('visible');
+      document.getElementById('mc_'+e.id).classList.add('visible');
+      if(st.metacog){ marcarMetacogUI(e.id,st.metacog); }
+    }
+  });
+  rmath(cont);
+}
+function htmlEjercicio(e){
+  return `<div class="card" id="ej_${e.id}">
+    <h3>${e.tipo}<span class="badge" style="display:none" id="bd_${e.id}">✓ a la primera</span></h3>
+    <p>${e.enun}</p>
+    <div class="opciones main">${e.ops.map((o,k)=>`<button onclick="respEj('${e.id}',${k},this)">${o.t}</button>`).join('')}</div>
+    <div class="veredicto" id="v_${e.id}"></div>
+    <div class="remedial" id="rem_${e.id}">
+      <h4>Mini-repaso antes del segundo intento</h4>
+      <p>${e.rem.enun}</p>
+      <div class="opciones rem">${e.rem.ops.map((o,k)=>`<button onclick="respRem('${e.id}',${k},this)">${o.t}</button>`).join('')}</div>
+      <div class="veredicto" id="vr_${e.id}"></div>
+    </div>
+    <div class="pistas no-print">
+      <button class="btn small ghost" onclick="verPista('${e.id}')">💡 Pedir una pista</button>
+      ${e.pistas.map((p,k)=>`<div class="pista-item" id="p_${e.id}_${k}"><strong>Pista ${k+1}${['(conceptual)','(estrategia)','(primer paso)','(error común)'][k]?' '+['— orientación conceptual','— estrategia','— primer paso','— error común a evitar'][k]:''}:</strong> ${p}</div>`).join('')}
+    </div>
+    <div class="solucion" id="sol_${e.id}"><strong style="color:var(--green)">Solución explicada:</strong> ${e.sol}</div>
+    <div class="metacog-mini" id="mc_${e.id}">
+      <strong>Micro-reflexión:</strong> ¿qué te ayudó más acá?
+      <div>
+        <button class="chip" onclick="metacogEj('${e.id}','La teoría',this)">La teoría</button>
+        <button class="chip" onclick="metacogEj('${e.id}','El laboratorio',this)">El laboratorio</button>
+        <button class="chip" onclick="metacogEj('${e.id}','Las pistas',this)">Las pistas</button>
+        <button class="chip" onclick="metacogEj('${e.id}','Razonarlo solo/a',this)">Razonarlo por mi cuenta</button>
+      </div>
+    </div>
+  </div>`;
+}
+function stEj(id){ if(!S.practica[id]) S.practica[id]={resuelto:false,intentos:0,pistas:0,primeraOk:false,remOk:null,metacog:null}; return S.practica[id]; }
+function buscarEj(id){ return EJ.find(x=>x.id===id)||GEJ.find(x=>x.id===id); }
+function respEj(id,k,btn){
+  const e=buscarEj(id), st=stEj(id);
+  if(st.resuelto) return;
+  st.intentos++;
+  const op=e.ops[k], v=document.getElementById('v_'+id);
+  if(op.ok){
+    st.resuelto=true;
+    if(st.intentos===1&&st.pistas===0){ st.primeraOk=true; S.racha[e.nivel]=(S.racha[e.nivel]||0)+1; document.getElementById('bd_'+id).style.display='inline-block'; }
+    btn.classList.add('correcta');
+    document.querySelectorAll('#ej_'+id+' .opciones.main button').forEach(b=>b.disabled=true);
+    v.className='veredicto ok'; v.innerHTML='<strong>¡Bien resuelto!</strong> '+op.fb;
+    document.getElementById('sol_'+id).classList.add('visible');
+    document.getElementById('mc_'+id).classList.add('visible');
+    pintarTabs();
+    if(typeof e.nivel==='number'&&(S.racha[e.nivel]||0)>=2) pintarEjercicios(); // refresca banner de salto
+  }else{
+    S.racha[e.nivel]=0;
+    if(op.mis){ S.mis[op.mis]=(S.mis[op.mis]||0)+1; }
+    btn.classList.add('incorrecta'); btn.disabled=true;
+    v.className='veredicto warn';
+    v.innerHTML=op.fb+'<br><em>Abajo se abrió un mini-repaso con un caso más simple: resolvelo y volvé a intentar.</em>';
+    document.getElementById('rem_'+id).classList.add('visible');
+  }
+  rmath(document.getElementById('ej_'+id));
+  guardar();
+}
+function respRem(id,k,btn){
+  const e=buscarEj(id), st=stEj(id);
+  const op=e.rem.ops[k], vr=document.getElementById('vr_'+id);
+  document.querySelectorAll('#rem_'+id+' .opciones.rem button').forEach(b=>b.disabled=true);
+  if(op.ok){
+    btn.classList.add('correcta');
+    vr.className='veredicto ok'; vr.innerHTML=op.fb+' <strong>Ahora sí: volvé al ejercicio principal.</strong>';
+    st.remOk=true;
+  }else{
+    btn.classList.add('incorrecta');
+    document.querySelectorAll('#rem_'+id+' .opciones.rem button').forEach((b,j)=>{if(e.rem.ops[j].ok)b.classList.add('correcta');});
+    vr.className='veredicto warn'; vr.innerHTML=op.fb+'<br><strong>Clave:</strong> '+e.rem.sol;
+    st.remOk=false;
+  }
+  rmath(vr); guardar();
+}
+function verPista(id){
+  const st=stEj(id), e=buscarEj(id);
+  if(st.pistas>=e.pistas.length) return;
+  document.getElementById('p_'+id+'_'+st.pistas).classList.add('visible');
+  st.pistas++;
+  S.racha[e.nivel]=0; // pedir pista corta la racha de "a la primera"
+  rmath(document.getElementById('ej_'+id));
+  guardar();
+}
+function metacogEj(id,val,btn){
+  stEj(id).metacog=val;
+  marcarMetacogUI(id,val);
+  guardar();
+}
+function marcarMetacogUI(id,val){
+  document.querySelectorAll('#mc_'+id+' .chip').forEach(c=>{
+    c.classList.toggle('elegido',c.textContent.trim()===val||('Razonarlo por mi cuenta'===c.textContent.trim()&&val==='Razonarlo solo/a'));
+  });
+}
+
+/* ============================================================
+   EJERCICIOS DE PRODUCCIÓN (mecánicos, sin IA)
+   ============================================================ */
+function stEjC(id){
+  if(!S.practica[id]) S.practica[id]={resuelto:false,intentos:0,pistas:0,primeraOk:false,sel:{},valor:'',metacog:null};
+  if(!S.practica[id].sel) S.practica[id].sel={};
+  return S.practica[id];
+}
+
+/* --- c13: clasificar objetos (Nivel 1) --- */
+const CLASIF_FILAS=[
+ {ex:'\\(a_5\\)',ok:'termino',fb:'\\(a_5\\) es un solo elemento de la lista: un término.'},
+ {ex:'\\(\\sum_{k=1}^{8}a_k\\)',ok:'parcial',fb:'Tope 8 (finito): es la suma parcial \\(S_8\\).'},
+ {ex:'\\(\\sum_{k=1}^{\\infty}a_k\\)',ok:'serie',fb:'Tope \\(\\infty\\): es la serie completa.'},
+ {ex:'\\(S_{12}\\)',ok:'parcial',fb:'La \\(S\\) avisa suma; el 12 dice hasta dónde: suma parcial.'},
+ {ex:'\\(\\lim_{n\\to\\infty}S_n\\)',ok:'limite',fb:'Es un límite: justamente el que decide la convergencia.'}
+];
+const CLASIF_OPS={termino:'Término',parcial:'Suma parcial',serie:'Serie',limite:'Límite'};
+function htmlClasif(){
+  const filas=CLASIF_FILAS.map((f,i)=>`<tr><td style="white-space:nowrap">${f.ex}</td><td>`+
+    Object.keys(CLASIF_OPS).map(k=>`<button class="chip" style="margin:2px" id="cl_${i}_${k}" onclick="clasifSel(${i},'${k}')">${CLASIF_OPS[k]}</button>`).join('')+
+    `</td></tr>`).join('');
+  return `<div class="card" id="ej_c13">
+    <h3>Producción: clasificá cada objeto<span class="badge" style="display:none" id="bd_c13">✓ a la primera</span></h3>
+    <p>Nada de opciones armadas: acá clasificás vos. Marcá si cada expresión es un <strong>término</strong>, una <strong>suma parcial</strong>, una <strong>serie</strong> o un <strong>límite</strong>, y después verificá todo junto.</p>
+    <div class="tabla-scroll"><table><tr><th>Expresión</th><th>Tu clasificación</th></tr>${filas}</table></div>
+    <button class="btn small no-print" id="btnClasif" onclick="clasifVerificar()">Verificar clasificación</button>
+    <div class="veredicto" id="v_c13"></div>
+  </div>`;
+}
+function clasifSel(i,k){
+  const st=stEjC('c13'); if(st.resuelto) return;
+  st.sel[i]=k;
+  Object.keys(CLASIF_OPS).forEach(kk=>{
+    const b=document.getElementById('cl_'+i+'_'+kk);
+    if(b){ b.classList.toggle('pred-elegida',kk===k); b.classList.remove('pred-ok'); }
+  });
+  guardar();
+}
+function clasifVerificar(){
+  const st=stEjC('c13'); if(st.resuelto) return;
+  const v=document.getElementById('v_c13');
+  if(Object.keys(st.sel).length<CLASIF_FILAS.length){
+    v.className='veredicto warn';
+    v.innerHTML='Te falta clasificar alguna fila: completá las cinco antes de verificar.';
+    return;
+  }
+  st.intentos++;
+  let mal=0,m1=false,m3=false;
+  CLASIF_FILAS.forEach((f,i)=>{
+    const eleg=st.sel[i];
+    if(eleg===f.ok){
+      const b=document.getElementById('cl_'+i+'_'+eleg); if(b) b.classList.add('pred-ok');
+    }else{
+      mal++;
+      if((eleg==='termino'&&f.ok==='parcial')||(eleg==='parcial'&&f.ok==='termino')) m1=true;
+      if((eleg==='parcial'&&f.ok==='serie')||(eleg==='serie'&&f.ok==='parcial')) m3=true;
+    }
+  });
+  if(mal===0){
+    st.resuelto=true;
+    if(st.intentos===1){ st.primeraOk=true; S.racha[1]=(S.racha[1]||0)+1; const b=document.getElementById('bd_c13'); if(b)b.style.display='inline-block'; }
+    v.className='veredicto ok';
+    v.innerHTML='<strong>Las cinco correctas.</strong> '+CLASIF_FILAS.map(f=>f.fb).join(' ');
+    const btn=document.getElementById('btnClasif'); if(btn)btn.disabled=true;
+    pintarTabs();
+  }else{
+    S.racha[1]=0;
+    if(m1) S.mis.M1++;
+    if(m3) S.mis.M3++;
+    v.className='veredicto warn';
+    v.innerHTML='Hay '+mal+' fila'+(mal>1?'s':'')+' para revisar: las correctas quedaron en verde, las otras siguen en azul. Pista: mirá el <em>tope</em> de cada sumatoria, y acordate de que la \\(S\\) siempre esconde una suma. Corregí y volvé a verificar.';
+  }
+  rmath(v); guardar();
+}
+function restaurarClasif(){
+  const st=S.practica.c13; if(!st) return;
+  Object.keys(st.sel||{}).forEach(i=>{
+    const b=document.getElementById('cl_'+i+'_'+st.sel[i]); if(b)b.classList.add('pred-elegida');
+  });
+  if(st.resuelto){
+    CLASIF_FILAS.forEach((f,i)=>{ const b=document.getElementById('cl_'+i+'_'+f.ok); if(b)b.classList.add('pred-ok'); });
+    const v=document.getElementById('v_c13');
+    v.className='veredicto ok'; v.innerHTML='<strong>Resuelto.</strong> '+CLASIF_FILAS.map(f=>f.fb).join(' ');
+    const btn=document.getElementById('btnClasif'); if(btn)btn.disabled=true;
+    if(st.primeraOk){ const b=document.getElementById('bd_c13'); if(b)b.style.display='inline-block'; }
+    rmath(v);
+  }
+}
+
+/* --- c23: completar un valor con validación (Nivel 2) --- */
+function htmlInputS2(){
+  return `<div class="card" id="ej_c23">
+    <h3>Producción: completá el valor<span class="badge" style="display:none" id="bd_c23">✓ a la primera</span></h3>
+    <p>Si \\(a_n=\\dfrac1{2^n}\\), calculá y escribí el valor de la suma parcial \\(S_2\\). Podés responder como fracción (por ejemplo <code>3/8</code>) o como decimal (por ejemplo <code>0,375</code>).</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span style="font-weight:700">\\(S_2=\\)</span>
+      <input type="text" id="inpS2" style="max-width:140px" placeholder="tu valor">
+      <button class="btn small no-print" onclick="verificarS2()">Verificar</button>
+    </div>
+    <div class="veredicto" id="v_c23"></div>
+    <div class="solucion" id="sol_c23"><strong style="color:var(--green)">Solución explicada:</strong> \\(S_2=a_1+a_2=\\tfrac12+\\tfrac14=\\tfrac34=0{,}75\\). Dos términos acumulados: ni el término suelto \\(a_2=\\tfrac14\\), ni la serie completa (que vale 1).</div>
+  </div>`;
+}
+function parseNum(s){
+  s=(s||'').trim().replace(/\s+/g,'').replace(',','.');
+  if(/^[+-]?\d+(\.\d+)?\/[+-]?\d+(\.\d+)?$/.test(s)){
+    const p=s.split('/'); const den=parseFloat(p[1]);
+    return den===0?NaN:parseFloat(p[0])/den;
+  }
+  if(s!==''&&s!=='.'&&/^[+-]?\d*(\.\d+)?$/.test(s)) return parseFloat(s);
+  return NaN;
+}
+function verificarS2(){
+  const st=stEjC('c23'); if(st.resuelto) return;
+  const raw=document.getElementById('inpS2').value;
+  const val=parseNum(raw);
+  const v=document.getElementById('v_c23');
+  if(isNaN(val)){
+    v.className='veredicto warn';
+    v.innerHTML='No pude leer ese valor. Escribilo como fracción (<code>3/4</code>) o como decimal (<code>0,75</code>).';
+    return;
+  }
+  st.intentos++; st.valor=raw;
+  if(Math.abs(val-0.75)<1e-9){
+    st.resuelto=true;
+    if(st.intentos===1){ st.primeraOk=true; S.racha[2]=(S.racha[2]||0)+1; const b=document.getElementById('bd_c23'); if(b)b.style.display='inline-block'; }
+    v.className='veredicto ok'; v.innerHTML='<strong>Correcto:</strong> \\(S_2=\\tfrac12+\\tfrac14=\\tfrac34\\).';
+    document.getElementById('sol_c23').classList.add('visible');
+    document.getElementById('inpS2').disabled=true;
+    pintarTabs();
+  }else{
+    S.racha[2]=0;
+    v.className='veredicto warn';
+    if(Math.abs(val-0.25)<1e-9){ S.mis.M1++; v.innerHTML='\\(0{,}25=\\tfrac14\\) es el término \\(a_2\\) solo. La suma parcial \\(S_2\\) pide acumular: \\(a_1+a_2\\).'; }
+    else if(Math.abs(val-1)<1e-9){ S.mis.M3++; v.innerHTML='\\(1\\) es el valor de la serie infinita completa. \\(S_2\\) se corta en el segundo término: da menos que 1.'; }
+    else if(Math.abs(val-0.5)<1e-9){ v.innerHTML='\\(\\tfrac12\\) es solo \\(a_1\\). Todavía falta sumarle \\(a_2=\\tfrac14\\).'; }
+    else{ v.innerHTML='Revisá la cuenta: \\(S_2=a_1+a_2\\) con \\(a_1=\\tfrac12\\) y \\(a_2=\\tfrac14\\). Llevá todo a denominador 4.'; }
+  }
+  rmath(v); guardar();
+}
+function restaurarS2(){
+  const st=S.practica.c23; if(!st) return;
+  const inp=document.getElementById('inpS2'); if(inp&&st.valor)inp.value=st.valor;
+  if(st.resuelto){
+    if(inp)inp.disabled=true;
+    const v=document.getElementById('v_c23');
+    v.className='veredicto ok'; v.innerHTML='<strong>Resuelto:</strong> \\(S_2=\\tfrac34\\).';
+    document.getElementById('sol_c23').classList.add('visible');
+    if(st.primeraOk){ const b=document.getElementById('bd_c23'); if(b)b.style.display='inline-block'; }
+    rmath(v);
+  }
+}
+
+/* ============================================================
+   AUTOEVALUACIÓN (8 ítems)
+   ============================================================ */
+const EVAL=[
+ {cat:'Conceptual', q:'Una <strong>serie</strong> es…',
+  ops:[{t:'La suma infinita asociada a una sucesión.',ok:true},
+       {t:'La suma de los primeros \\(n\\) términos.'},
+       {t:'Una lista ordenada de números.'},
+       {t:'El límite de los términos.'}],
+  fb:'La serie es \\(\\sum_{n=1}^{\\infty}a_n\\): suma infinita. La suma hasta \\(n\\) es \\(S_n\\); la lista es la sucesión.'},
+ {cat:'Conceptual', q:'La convergencia de una serie se decide estudiando…',
+  ops:[{t:'\\(\\lim S_n\\), el límite de las sumas parciales.',ok:true},
+       {t:'\\(\\lim a_n\\), el límite de los términos.'},
+       {t:'El primer término \\(a_1\\).'},
+       {t:'La cantidad de términos positivos.'}],
+  fb:'Converge \\(\\iff\\lim S_n=L\\in\\mathbb{R}\\). El límite de \\(a_n\\) solo aporta el test de divergencia.'},
+ {cat:'Procedimental', q:'Si \\(a_n=\\dfrac1{2^n}\\), entonces \\(S_2=\\)',
+  ops:[{t:'\\(\\tfrac34\\)',ok:true},{t:'\\(\\tfrac14\\)'},{t:'\\(1\\)'},{t:'\\(\\tfrac12\\)'}],
+  fb:'\\(S_2=\\tfrac12+\\tfrac14=\\tfrac34\\). Ni el término \\(a_2=\\tfrac14\\), ni la serie completa (que vale 1).'},
+ {cat:'Procedimental', q:'Si \\(a_n=1\\) para todo \\(n\\), entonces \\(S_n=n\\) y por lo tanto la serie \\(\\sum_{n=1}^{\\infty}1\\)…',
+  ops:[{t:'Diverge, porque \\(\\lim S_n=+\\infty\\).',ok:true},
+       {t:'Converge a 1.'},{t:'Converge a \\(n\\).'},{t:'Converge porque los términos son constantes.'}],
+  fb:'\\(S_n=n\\to+\\infty\\): diverge. Además \\(\\lim a_n=1\\neq0\\), que ya garantizaba la divergencia.'},
+ {cat:'Interpretación', q:'En el laboratorio, si los puntos verdes (\\(S_n\\)) se van pegando a una recta horizontal a medida que \\(n\\) crece, eso significa que…',
+  ops:[{t:'La serie converge, y esa altura es su suma.',ok:true},
+       {t:'La sucesión \\(a_n\\) es constante.'},
+       {t:'La serie diverge lentamente.'},
+       {t:'Hay un error en el gráfico.'}],
+  fb:'Acumulados que se estabilizan = \\(\\lim S_n\\) finito = serie convergente; la altura de la recta es la suma.'},
+ {cat:'Interpretación', q:'Se sabe que \\(\\sum_{n=1}^{5}\\tfrac1{2^n}=\\tfrac{31}{32}\\) y \\(\\sum_{n=1}^{\\infty}\\tfrac1{2^n}=1\\). La mejor lectura de estos dos números es:',
+  ops:[{t:'\\(\\tfrac{31}{32}\\) es una aproximación finita (suma parcial) del valor exacto 1 de la serie.',ok:true},
+       {t:'Hay una contradicción: la misma suma no puede dar dos valores.'},
+       {t:'\\(\\tfrac{31}{32}\\) es el valor de la serie y 1 es un redondeo.'},
+       {t:'Los dos números representan el término \\(a_5\\).'}],
+  fb:'No hay contradicción: son objetos distintos. \\(S_5\\) corta en 5 términos; la serie es el límite del proceso.'},
+ {cat:'Detección de errores', q:'Un estudiante escribe: «el segundo término de la serie \\(\\sum a_n\\) es \\(a_1+a_2\\)». ¿Dónde está el error?',
+  ops:[{t:'\\(a_1+a_2\\) es \\(S_2\\): el segundo término de la sucesión de sumas parciales. Los términos de la serie son los \\(a_n\\).',ok:true},
+       {t:'No hay error: es una forma válida de decirlo.'},
+       {t:'El error es que debió escribir \\(a_1\\cdot a_2\\).'},
+       {t:'El error es que las series no tienen términos.'}],
+  fb:'Precisión de lenguaje: los términos de la serie son \\(a_1,a_2,a_3,\\dots\\); los \\(S_n\\) forman otra sucesión (la de acumulados).'},
+ {cat:'Detección de errores', q:'«Como \\(\\tfrac1n\\to0\\), la serie \\(\\sum\\tfrac1n\\) converge.» Esta afirmación es…',
+  ops:[{t:'Falsa: usa la condición necesaria como si fuera suficiente; la armónica diverge.',ok:true},
+       {t:'Verdadera: los términos tienden a cero.'},
+       {t:'Falsa, porque \\(\\tfrac1n\\) no tiende a 0.'},
+       {t:'Verdadera, porque toda serie con términos positivos converge.'}],
+  fb:'\\(a_n\\to0\\) no alcanza. Las sumas parciales de la armónica crecen sin techo: \\(S_n\\to+\\infty\\).'}
+];
+function pintarEval(){
+  const cont=document.getElementById('evalPreguntas');
+  cont.innerHTML=EVAL.map((p,i)=>`
+    <div class="card" id="eq${i}">
+      <h3>Ítem ${i+1} <span class="badge reco" style="border-color:var(--violet);color:var(--violet);background:#F5F1FA">${p.cat}</span></h3>
+      <p>${p.q}</p>
+      <div class="opciones">${p.ops.map((o,j)=>`<button onclick="respEval(${i},${j},this)">${o.t}</button>`).join('')}</div>
+      <div class="veredicto" id="efb${i}"></div>
+    </div>`).join('');
+  Object.keys(S.eval.respuestas).forEach(i=>{
+    const j=S.eval.respuestas[i], card=document.getElementById('eq'+i); if(!card)return;
+    const btns=card.querySelectorAll('.opciones button'); btns.forEach(b=>b.disabled=true);
+    const ok=!!EVAL[i].ops[j].ok;
+    btns[j].classList.add(ok?'correcta':'incorrecta');
+    if(!ok) EVAL[i].ops.forEach((o,k)=>{if(o.ok)btns[k].classList.add('correcta');});
+    const fb=document.getElementById('efb'+i);
+    fb.className='veredicto '+(ok?'ok':'warn'); fb.innerHTML=EVAL[i].fb;
+  });
+  rmath(cont);
+  if(S.eval.puntaje!=null) mostrarResEval();
+}
+function respEval(i,j,btn){
+  if(S.eval.respuestas[i]!==undefined) return;
+  S.eval.respuestas[i]=j;
+  const p=EVAL[i], ok=!!p.ops[j].ok;
+  const card=document.getElementById('eq'+i);
+  card.querySelectorAll('.opciones button').forEach(b=>b.disabled=true);
+  btn.classList.add(ok?'correcta':'incorrecta');
+  if(!ok) card.querySelectorAll('.opciones button').forEach((b,k)=>{if(p.ops[k].ok)b.classList.add('correcta');});
+  const fb=document.getElementById('efb'+i);
+  fb.className='veredicto '+(ok?'ok':'warn'); fb.innerHTML=p.fb; rmath(fb);
+  if(Object.keys(S.eval.respuestas).length===EVAL.length){
+    let pts=0; Object.keys(S.eval.respuestas).forEach(k=>{if(EVAL[k].ops[S.eval.respuestas[k]].ok)pts++;});
+    S.eval.puntaje=pts; mostrarResEval();
+    document.getElementById('nav-evaluacion').classList.add('done');
+  }
+  guardar();
+}
+function recoEval(p){
+  if(p<=3) return 'Necesitás volver al Nivel 1 o 2 de la práctica y releer los bloques 1 a 4 de la teoría.';
+  if(p<=5) return 'Podés reforzar con los ejercicios guiados del Nivel 3 antes de seguir avanzando.';
+  if(p<=7) return 'Estás listo/a para avanzar: consolidá con el Nivel 4 y animate al 5.';
+  return 'Dominio completo del tema: podés intentar los desafíos integradores del Nivel 5 y ayudar a un compañero a distinguir aₙ de Sₙ.';
+}
+function mostrarResEval(){
+  const p=S.eval.puntaje;
+  document.getElementById('evalResultado').innerHTML=`<div class="resultado-card">
+    <h3>Puntaje: ${p}/8</h3>
+    <div class="progreso-wrap"><div class="progreso-fill" style="width:${p/8*100}%"></div></div>
+    <p><strong>Recomendación:</strong> ${recoEval(p)}</p>
+    <button class="btn green no-print" onclick="ir('cierre')">Ir al cierre metacognitivo</button>
+  </div>`;
+}
+
+/* ============================================================
+   CIERRE METACOGNITIVO + RUTA PERSONALIZADA
+   ============================================================ */
+function guardarMeta(){
+  S.meta={m1:val('meta1'),m2:val('meta2'),m3:val('meta3'),m4:val('meta4')};
+  guardar();
+}
+function val(id){ const e=document.getElementById(id); return e?e.value:''; }
+function nivelAlcanzado(){
+  let max=0;
+  for(let n=1;n<=5;n++){
+    if(idsNivel(n).every(id=>S.practica[id]&&S.practica[id].resuelto)) max=n;
+  }
+  return max;
+}
+function fortalezas(){
+  const f=[];
+  for(let n=1;n<=5;n++){
+    const ids=idsNivel(n);
+    const primeras=ids.filter(id=>S.practica[id]&&S.practica[id].primeraOk).length;
+    if(ids.length&&primeras===ids.length) f.push('Nivel '+n+' ('+NIVELES_INFO[n].nom+') resuelto a la primera y sin pistas');
+  }
+  const geoPrim=GEJ.filter(e=>S.practica[e.id]&&S.practica[e.id].primeraOk).length;
+  if(geoPrim===GEJ.length) f.push('Serie geométrica: los 6 ejercicios a la primera y sin pistas');
+  if(S.eval.puntaje!=null&&S.eval.puntaje>=7) f.push('Autoevaluación con dominio alto ('+S.eval.puntaje+'/8)');
+  if(S.diag.puntaje!=null&&S.diag.puntaje>=5) f.push('Buenas ideas previas detectadas en el diagnóstico');
+  return f;
+}
+function reforzar(){
+  return Object.keys(S.mis).filter(m=>S.mis[m]>=1).sort((a,b)=>S.mis[b]-S.mis[a])
+    .map(m=>({tag:m,veces:S.mis[m],lbl:MIS_LBL[m],ruta:MIS_RUTA[m]}));
+}
+function generarResumen(){
+  guardarMeta();
+  const na=nivelAlcanzado(), fts=fortalezas(), refs=reforzar();
+  const pistasTot=Object.values(S.practica).reduce((s,x)=>s+(x.pistas||0),0);
+  let html=`<div class="resultado-card"><h3>Resumen final de tu recorrido</h3>
+    <p><strong>Nivel alcanzado en la práctica:</strong> ${na>0?('Nivel '+na+' — '+NIVELES_INFO[na].nom):'Todavía no completaste ningún nivel entero.'}</p>
+    <p><strong>Fortalezas detectadas:</strong> ${fts.length?fts.join(' · '):'Se van a ver mejor cuando completes más ejercicios.'}</p>`;
+  if(refs.length){
+    html+=`<p><strong>Aspectos a reforzar (tu ruta de repaso personalizada):</strong></p>`;
+    refs.forEach(r=>{ html+=`<div class="nota rust" style="margin:8px 0"><strong>${r.lbl}</strong> (apareció ${r.veces} ${r.veces===1?'vez':'veces'}). ${r.ruta}</div>`; });
+  }else{
+    html+=`<p><strong>Aspectos a reforzar:</strong> no se registraron confusiones recurrentes. Excelente precisión conceptual.</p>`;
+  }
+  if(pistasTot>=5) html+=`<div class="nota amber">Usaste ${pistasTot} pistas en total: buena señal de trabajo honesto, pero indica que te conviene más práctica guiada (Nivel 3) antes de los desafíos.</div>`;
+  const geoHechos=GEJ.filter(e=>S.practica[e.id]&&S.practica[e.id].resuelto).length;
+  html+=`<p><strong>Próximos pasos:</strong> ${na>=5?(geoHechos<GEJ.length?'Cerraste los cinco niveles: el paso natural es la sección de <strong>serie geométrica</strong> ('+geoHechos+'/'+GEJ.length+' ejercicios hechos), donde el método rinde completo.':'Cerraste los cinco niveles y la serie geométrica entera: el siguiente paso es la unidad de criterios de convergencia.'):(S.eval.puntaje!=null?recoEval(S.eval.puntaje):'Completá la autoevaluación para recibir una recomendación afinada.')}</p>
+    <button class="btn no-print" onclick="ir('reporte')">Generar mi reporte exportable</button></div>`;
+  const box=document.getElementById('resumenFinal');
+  box.innerHTML=html; rmath(box);
+  document.getElementById('nav-cierre').classList.add('done');
+}
+
+/* ============================================================
+   REPORTE EXPORTABLE
+   ============================================================ */
+function guardarNombre(){ S.nombre=val('nombreEst'); guardar(); }
+function generarReporte(){
+  guardarMeta(); guardarNombre();
+  const na=nivelAlcanzado(), refs=reforzar(), fts=fortalezas();
+  const pistasTot=Object.values(S.practica).reduce((s,x)=>s+(x.pistas||0),0);
+  const hoy=new Date();
+  const L=[];
+  L.push('══════════════════════════════════════════════');
+  L.push('REPORTE DE APRENDIZAJE — laboratoriobest-IA');
+  L.push('Escuela Técnica Philips · 5.º año');
+  L.push('══════════════════════════════════════════════');
+  L.push('Estudiante: '+(S.nombre||'(sin completar)'));
+  L.push('Fecha: '+hoy.toLocaleDateString('es-AR'));
+  L.push('Tema: Sucesiones, sumas parciales y series');
+  L.push('');
+  L.push('— DIAGNÓSTICO INICIAL —');
+  L.push(S.diag.puntaje!=null?('Puntaje: '+S.diag.puntaje+'/6 · '+NIVEL_TXT[S.diag.nivel]):'No realizado.');
+  L.push('Nivel de práctica recomendado: '+(S.diag.nivel!=null?('Nivel '+nivelInicioReco()):'—'));
+  L.push('');
+  L.push('— PRÁCTICA ADAPTATIVA —');
+  const idsAdapt=todosLosIds();
+  const resAdapt=idsAdapt.filter(id=>S.practica[id]&&S.practica[id].resuelto).length;
+  L.push('Ejercicios resueltos: '+resAdapt+'/'+idsAdapt.length+' · Pistas usadas: '+pistasTot);
+  L.push('Nivel máximo completado: '+(na>0?('Nivel '+na+' ('+NIVELES_INFO[na].nom+')'):'ninguno completo aún'));
+  for(let n=1;n<=5;n++){
+    const ids=idsNivel(n);
+    const h=ids.filter(id=>S.practica[id]&&S.practica[id].resuelto).length;
+    const pr=ids.filter(id=>S.practica[id]&&S.practica[id].primeraOk).length;
+    L.push('  Nivel '+n+' ('+NIVELES_INFO[n].nom+'): '+h+'/'+ids.length+' resueltos, '+pr+' a la primera');
+  }
+  L.push('');
+  L.push('— SERIE GEOMÉTRICA —');
+  const geoH=GEJ.filter(e=>S.practica[e.id]&&S.practica[e.id].resuelto).length;
+  const geoPr=GEJ.filter(e=>S.practica[e.id]&&S.practica[e.id].primeraOk).length;
+  L.push(geoH>0?('Ejercicios resueltos: '+geoH+'/'+GEJ.length+' · '+geoPr+' a la primera'):'Sección no trabajada aún.');
+  L.push('');
+  L.push('— AUTOEVALUACIÓN FORMATIVA —');
+  L.push(S.eval.puntaje!=null?('Puntaje: '+S.eval.puntaje+'/8 · '+recoEval(S.eval.puntaje)):'No realizada.');
+  L.push('');
+  L.push('— OBSTÁCULOS DETECTADOS (ruta de repaso) —');
+  if(refs.length){ refs.forEach(r=>L.push('  • '+r.lbl+' ('+r.veces+' vez/veces) → '+r.ruta)); }
+  else L.push('  Sin confusiones recurrentes registradas.');
+  L.push('');
+  L.push('— FORTALEZAS —');
+  L.push(fts.length?fts.map(f=>'  • '+f).join('\n'):'  (a completar con más recorrido)');
+  L.push('');
+  L.push('— REFLEXIONES METACOGNITIVAS —');
+  L.push('1) Qué entendí mejor: '+(S.meta.m1||'—'));
+  L.push('2) Qué error voy a evitar: '+(S.meta.m2||'—'));
+  L.push('3) Qué necesito practicar: '+(S.meta.m3||'—'));
+  L.push('4) Qué estrategia me sirvió: '+(S.meta.m4||'—'));
+  L.push('');
+  L.push('— RECOMENDACIÓN FINAL —');
+  L.push(na>=5?'Cinco niveles completos: continuar con series numéricas (geométricas y criterios de convergencia).':(S.eval.puntaje!=null?recoEval(S.eval.puntaje):'Completar la autoevaluación para una recomendación afinada.'));
+  L.push('══════════════════════════════════════════════');
+  const txt=L.join('\n');
+  const box=document.getElementById('reporteTexto');
+  box.style.display='block'; box.textContent=txt;
+  document.getElementById('reporteBotones').style.display='block';
+  document.getElementById('nav-reporte').classList.add('done');
+  return txt;
+}
+function copiarReporte(){
+  const txt=document.getElementById('reporteTexto').textContent||generarReporte();
+  const ok=()=>{const s=document.getElementById('copiadoOk');s.style.display='inline';setTimeout(()=>s.style.display='none',2200);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(()=>copiarFallback(txt,ok)); }
+  else copiarFallback(txt,ok);
+}
+function copiarFallback(txt,ok){
+  const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta);
+  ta.select(); try{document.execCommand('copy');ok();}catch(e){} document.body.removeChild(ta);
+}
+function descargarReporte(){
+  const txt=document.getElementById('reporteTexto').textContent||generarReporte();
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='reporte_sucesiones_series_'+(S.nombre?S.nombre.replace(/\s+/g,'_'):'estudiante')+'.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+/* ============================================================
+   REINICIO (modal propio, sin confirm() nativo)
+   ============================================================ */
+function abrirReset(){ document.getElementById('modalReset').classList.add('visible'); }
+function cerrarReset(){ document.getElementById('modalReset').classList.remove('visible'); }
+function resetTotal(){
+  try{ localStorage.removeItem(CLAVE); }catch(e){}
+  S={nombre:'',diag:{respuestas:{},puntaje:null,nivel:null},practica:{},racha:{},
+     mis:{M1:0,M2:0,M3:0,M4:0,M5:0},eval:{respuestas:{},puntaje:null},
+     meta:{m1:'',m2:'',m3:'',m4:''},labPred:{},geoPred:{},nivelActivo:1};
+  cerrarReset();
+  pintarPred(); labDibujar();
+  pintarGeo(); pintarPredGeo(); dibujarGeo();
+  const bc=document.getElementById('btnContinuar'); if(bc)bc.style.display='none';
+  pintarDiag(); document.getElementById('diagResultado').innerHTML='';
+  pintarTabs(); pintarEjercicios(); pintarEval();
+  document.getElementById('evalResultado').innerHTML='';
+  document.getElementById('resumenFinal').innerHTML='';
+  ['meta1','meta2','meta3','meta4','nombreEst'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('reporteTexto').style.display='none';
+  document.getElementById('reporteBotones').style.display='none';
+  document.querySelectorAll('nav button.done').forEach(b=>b.classList.remove('done'));
+  const el=document.getElementById('practicaReco');
+  el.className='nota amber';
+  el.innerHTML='Todavía no hiciste el diagnóstico. Podés empezar por el Nivel 1, o <a href="#" onclick="ir(\'diagnostico\');return false">hacer el diagnóstico</a> para recibir una recomendación.';
+  ir('portada');
+}
+
+/* ============================================================
+   ARRANQUE
+   ============================================================ */
+function continuarDonde(){
+  if(S.eval.puntaje!=null) ir('cierre');
+  else if(Object.keys(S.practica).length) ir('practica');
+  else if(S.diag.puntaje!=null) ir('activacion');
+  else ir('diagnostico');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  cargar();
+  pintarDiag(); pintarTabs(); pintarEjercicios(); pintarEval(); actualizarReco(); pintarPred();
+  pintarGeo(); pintarPredGeo();
+  if(S.diag.puntaje!=null||Object.keys(S.practica).length||S.eval.puntaje!=null){
+    const b=document.getElementById('btnContinuar'); if(b)b.style.display='inline-block';
+  }
+  ['meta1','meta2','meta3','meta4'].forEach((id,i)=>{const e=document.getElementById(id);if(e)e.value=S.meta['m'+(i+1)]||'';});
+  const ne=document.getElementById('nombreEst'); if(ne)ne.value=S.nombre||'';
+  labDibujar(); dibujarGeo(); // los laboratorios no dependen de KaTeX: dibujar ya
+  // KaTeX puede cargar después del DOM: re-render diferido de las fórmulas
+  const intento=setInterval(()=>{
+    if(window.renderMathInElement){ rmath(document.body); labDibujar(); dibujarGeo(); clearInterval(intento); }
+  },120);
+  setTimeout(()=>{ clearInterval(intento); },15000);
+});
+</script>
+</body>
+</html>
